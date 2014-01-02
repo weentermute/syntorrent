@@ -1,0 +1,76 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:SynologyWebApi="clr-namespace:SynologyWebApi;assembly=SynologyWebApi" xmlns:local="clr-namespace:SynTorrent" x:Class="SynTorrent.FilterTreeControl" 
+             mc:Ignorable="d" Height="515" Width="145"
+            Background="{DynamicResource BackgroundBrush}"
+            Foreground="{DynamicResource ForegroundBrush}" >
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="FilterNodeDataTemplate" DataType="{x:Type SynologyWebApi:TaskFilterViewModel}">
+            <Grid Width="200" Height="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.1*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.5*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Column="0" BorderThickness="2" BorderBrush="Transparent" Background="{Binding FilterBrush, Mode=OneWay}"/>
+                <TextBlock Grid.Row="0" Grid.Column="1"  Text="{Binding Name}" Margin="10,0" Foreground="WhiteSmoke"></TextBlock>
+            </Grid>
+        </DataTemplate>
+
+        <HierarchicalDataTemplate x:Key="RootNodeDataTemplate" 
+                       ItemsSource="{Binding Children}" 
+                       ItemTemplate="{StaticResource FilterNodeDataTemplate}">
+                <Grid Height="24" Width="200">
+                    <TextBlock Text="{Binding Name}" Margin="10,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Foreground="WhiteSmoke"></TextBlock>
+                </Grid>
+        </HierarchicalDataTemplate>
+    </UserControl.Resources>
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <TreeView x:Name="FiltersTreeView" BorderThickness="0" Background="{DynamicResource BackgroundBrush}" Grid.Row="1" FontSize="14"
+                  ItemTemplate="{DynamicResource RootNodeDataTemplate}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItemChanged="FiltersTreeView_SelectedItemChanged">
+            <TreeView.Resources>
+                <!--    override the system brushes so that selected items are transparent
+                        whether the TreeView has focus or not 
+                        See http://stackoverflow.com/questions/388232/wpf-listbox-image-selected-the-saga-continues
+                -->
+                <SolidColorBrush
+                    x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                    Color="DarkSlateGray" />
+            </TreeView.Resources>
+            
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+                    <Style.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True"/>
+                                <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </MultiTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.ItemContainerStyle>
+        </TreeView>
+        <local:SearchTextBox x:Name="SearchBox" Height="Auto" Width="Auto" Search="SearchBox_Search"/>
+
+    </Grid>
+</UserControl>
