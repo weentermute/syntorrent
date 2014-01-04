@@ -31,7 +31,7 @@
     <ProductName>SynTorrent</ProductName>
     <SuiteName>SynTorrent</SuiteName>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>42</ApplicationRevision>
+    <ApplicationRevision>43</ApplicationRevision>
     <ApplicationVersion>0.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>

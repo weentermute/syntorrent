@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using SynologyWebApi;
 using System.Windows.Threading;
+using System.Text.RegularExpressions;
 
 namespace SynTorrent
 {
@@ -78,6 +72,9 @@ namespace SynTorrent
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
+            // Log out
+            WebApi.Logout();
+            Properties.Settings.Default.SessionID = "";
             ShowLogin();
         }
 
@@ -160,22 +157,14 @@ namespace SynTorrent
                 GetTaskList_Start(this);
         }
 
+        private static Regex _RegExCamelCase = new Regex("([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))");
+
         private void TaskList_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             // Adjust and rename some auto generated columns
             string headerName = e.Column.Header.ToString();
 
-            if( headerName == "Size" )
-            {
-                DataGridTextColumn col = (DataGridTextColumn)e.Column;
-                col.CanUserSort = true;
-                col.Header = "File Size";
-            }
-            else if( headerName == "CreateTime")
-            {
-                e.Column.Header = "Create Time";
-            }
-            else if( headerName == "Id" )
+            if( headerName == "Id" )
             {
                 // Hide Id column
                 e.Cancel = true;
@@ -183,14 +172,6 @@ namespace SynTorrent
             else if( headerName == "TaskStateColor")
             {
                 e.Cancel = true;
-            }
-            else if (headerName == "DownloadSpeed")
-            {
-                e.Column.Header = "Download Speed";
-            }
-            else if (headerName == "UploadSpeed")
-            {
-                e.Column.Header = "Upload Speed";
             }
             else if( headerName == "Ratio")
             {
@@ -200,6 +181,11 @@ namespace SynTorrent
             {
                 (e.Column as DataGridTextColumn).Binding.StringFormat = "{0:F1}%";
             }
+
+            // Convert from "CamelCase" to "Camel Case"
+            headerName = _RegExCamelCase.Replace(headerName, "$1 ");
+
+            e.Column.Header = headerName;
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)

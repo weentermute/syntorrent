@@ -34,6 +34,24 @@ namespace SynTorrent
 
             UploadFilesListBox.ItemsSource = UploadFiles;
 
+            if(String.IsNullOrEmpty(UrlTextBox.Text))
+            {
+                // Check if clipboard contains a valid Uri string.
+                if(Clipboard.ContainsText())
+                {
+                    string text = Clipboard.GetText();
+                    if(IsValidUri(text))
+                    {
+                        UrlTextBox.Text = text;
+                    }
+                }
+            }
+
+            if (!String.IsNullOrEmpty(UrlTextBox.Text))
+            {
+                UrlTextBox.SelectAll();
+            }
+
             Activate();
         }
 
@@ -131,7 +149,20 @@ namespace SynTorrent
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
             CanCreate = UrlTextBox.Text != "" || UploadFiles.Count > 0;
-        } 
+        }
+
+        static private Boolean IsValidUri(String uri)
+        {
+            try
+            {
+                new Uri(uri);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 
     /// <summary>

@@ -32,6 +32,7 @@ namespace SynologyWebApi
             _File = GetValue("title");
             _Size = new FileSize(GetValue("size", "0"));
             _Status = GetValue("status");
+            _UserName = GetValue("username");
             try
             {
                 _Destination = Data["additional"]["detail"]["destination"];
@@ -192,6 +193,9 @@ namespace SynologyWebApi
 
         private FileSize _UploadSpeed;
 
+        /// <summary>
+        /// Current upload speed.
+        /// </summary>
         public FileSize UploadSpeed
         {
             get { return _UploadSpeed; }
@@ -199,6 +203,9 @@ namespace SynologyWebApi
 
         private FileSize _DownloadSpeed;
 
+        /// <summary>
+        /// Current download speed.
+        /// </summary>
         public FileSize DownloadSpeed
         {
             get { return _DownloadSpeed; }
@@ -206,9 +213,23 @@ namespace SynologyWebApi
 
         private Color _TaskStateColor;
 
+        /// <summary>
+        /// Color of the task's current state.
+        /// </summary>
         public Color TaskStateColor
         {
             get { return _TaskStateColor; }
+        }
+
+
+        private string _UserName;
+
+        /// <summary>
+        /// The user name of the task's owner.
+        /// </summary>
+        public string UserName
+        {
+            get { return _UserName; }
         }
 
         /// <summary>
