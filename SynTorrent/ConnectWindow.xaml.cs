@@ -39,6 +39,7 @@ namespace SynTorrent
             WebApi.Address = Properties.Settings.Default.Address;
             WebApi.UseHTTPS = Properties.Settings.Default.UseHTTPS;
             WebApi.SessionID = Properties.Settings.Default.SessionID;
+            WebApi.TrustedConnection = Properties.Settings.Default.TrustedConnection;
 
             WebApi.VerifyNotify();
 
@@ -67,6 +68,7 @@ namespace SynTorrent
             LoginName.IsEnabled = false;
             Password.IsEnabled = false;
             LoginButton.IsEnabled = false;
+            TrustConnectionCheckBox.IsEnabled = false;
         }
 
         public DownloadStationApi WebApi { get; set; }
@@ -112,7 +114,7 @@ namespace SynTorrent
                 UseHTTPS.IsEnabled = true;
                 LoginName.IsEnabled = true;
                 Password.IsEnabled = true;
-                LoginButton.IsEnabled = true;
+                LoginButton.IsEnabled = true;                
                 Address.Focus();
             }
         }
@@ -134,6 +136,8 @@ namespace SynTorrent
                 Properties.Settings.Default.Username = WebApi.Username;
                 Properties.Settings.Default.Address = WebApi.Address;
                 Properties.Settings.Default.SessionID = WebApi.SessionID;
+                Properties.Settings.Default.UseHTTPS = WebApi.UseHTTPS;
+                Properties.Settings.Default.TrustedConnection = WebApi.TrustedConnection;
 
                 // Close window after 1 sec
                 DispatcherTimer timer = new DispatcherTimer();

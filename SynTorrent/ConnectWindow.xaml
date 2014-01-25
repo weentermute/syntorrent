@@ -29,12 +29,13 @@
         <TextBox x:Name="LoginName" HorizontalAlignment="Left" Height="23" Margin="151,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="LoginName_TextChanged"/>
         <PasswordBox x:Name="Password" HorizontalAlignment="Left" Margin="151,117,0,0" VerticalAlignment="Top" Width="120"/>
         <Button x:Name="LoginButton" Content="Login" HorizontalAlignment="Left" Margin="326,216,0,0" VerticalAlignment="Top" Width="91" Height="44" IsDefault="True" Click="LoginButton_Click" IsEnabled="{Binding ReadyToLogin, Mode=OneWay}"/>
-        <StatusBar HorizontalAlignment="Left" Height="63" Margin="10,216,0,0" VerticalAlignment="Top" Width="316"
+        <StatusBar HorizontalAlignment="Left" Height="101" Margin="10,178,0,0" VerticalAlignment="Top" Width="316"
 			Background="{DynamicResource BackgroundBrush}"
 			Foreground="{DynamicResource ForegroundBrush}">
-            <TextBlock x:Name="ConnectionStatusLabel" Width="306" Height="46" FontSize="14" TextWrapping="Wrap" TextOptions.TextHintingMode="Animated"/>
+            <TextBlock x:Name="ConnectionStatusLabel" Width="306" Height="82" FontSize="14" TextWrapping="Wrap" TextOptions.TextHintingMode="Animated"/>
         </StatusBar>
         <CheckBox x:Name="UseHTTPS" Content="Use HTTPS" HorizontalAlignment="Left" Margin="286,54,0,0" VerticalAlignment="Top" IsChecked="{Binding UseHTTPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <CheckBox x:Name="TrustConnectionCheckBox" Content="I trust this connection" HorizontalAlignment="Left" Margin="31,145,0,0" VerticalAlignment="Top" Width="240" ToolTip="Enable if you use https and your server does not have a valid certificate" IsChecked="{Binding TrustedConnection}" IsEnabled="{Binding UseHTTPS}"/>
 
     </Grid>
 </Controls:Window>

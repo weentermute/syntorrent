@@ -154,5 +154,17 @@ namespace SynTorrent.Properties {
                 this["CurrentFilterKeywords"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TrustedConnection {
+            get {
+                return ((bool)(this["TrustedConnection"]));
+            }
+            set {
+                this["TrustedConnection"] = value;
+            }
+        }
     }
 }

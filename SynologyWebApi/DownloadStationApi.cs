@@ -61,7 +61,21 @@ namespace SynologyWebApi
         /// <summary>
         /// 
         /// </summary>
-        public bool UseHTTPS { get; set; }
+        public bool UseHTTPS 
+        {
+            get { return _UseHTTPS; }
+            set
+            {
+                _UseHTTPS = value;
+                NotifyPropertyChanged();
+            } 
+        }
+        private bool _UseHTTPS = false;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool TrustedConnection { get; set; }
 
         /// <summary>
         /// Holds the username used for a logging into a a new session.
@@ -298,6 +312,13 @@ namespace SynologyWebApi
             IsIdle = false;
             try
             {
+                // Install our certificate validation if we use https
+                if (UseHTTPS)
+                {
+                    CertificateValidation.InstallCustomValidation();
+                    CertificateValidation.TrustedServer = TrustedConnection;
+                }
+
                 ProgressMessage = "Querying " + URL;
 
                 HttpRequest syno = new HttpRequest();
