@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SynTorrent")]
-[assembly: AssemblyCopyright("Copyright ©  2013 Emilio Cherubini")]
+[assembly: AssemblyCopyright("Copyright © 2014 Emilio Cherubini")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
