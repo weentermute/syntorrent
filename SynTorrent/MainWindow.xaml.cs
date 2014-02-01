@@ -62,6 +62,10 @@ namespace SynTorrent
 
             // Check command line options
             ApendArgs(SingleInstanceApplication.CommandLineArguments.GetArguments());
+
+            // Set version info
+            if (App.ClickOnceVersion() != new System.Version())
+                Title += " " + App.ClickOnceVersion().ToString();
         }
 
         private void RefreshListTimerTick(object sender, EventArgs e)

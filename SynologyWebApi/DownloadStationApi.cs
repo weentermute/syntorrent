@@ -590,21 +590,31 @@ namespace SynologyWebApi
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public bool CreateDownloadTaskFromFile(string file)
+        public bool CreateDownloadTaskFromFile(string filePath)
         {
             ProgressMessage = "Creating download task...";
             IsIdle = false;
             bool success = false;
             try
             {
-                byte[] fileData = ConvertFileToByteArray(file);
+                // In case of an URI path convert it.
+                // This might happen when application is a ClickOnce application.
+                try
+                {
+                    string localPath = new Uri(filePath).LocalPath;
+                    filePath = localPath;
+                }
+                catch(Exception)
+                { }
+
+                byte[] fileData = ConvertFileToByteArray(filePath);
 
                 HttpRequest syno = new HttpRequest();
                 syno.PostParameters.Add("_sid", SessionID);
                 syno.PostParameters.Add("api", "SYNO.DownloadStation.Task");
                 syno.PostParameters.Add("version", "1");
                 syno.PostParameters.Add("method", "create");
-                syno.PostParameters.Add("file", new FormUpload.FileParameter(fileData, Path.GetFileName(file)));
+                syno.PostParameters.Add("file", new FormUpload.FileParameter(fileData, Path.GetFileName(filePath)));
 
                 string jsonResponse = syno.PostMultipartFormData(URL + ApiInfo.Task.Path);
                 var jss = new JavaScriptSerializer();

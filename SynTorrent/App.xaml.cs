@@ -19,6 +19,17 @@ namespace SynTorrent
     /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// Retrieves the current ClickOnce Version.
+        /// </summary>
+        /// <returns></returns>
+        static public System.Version ClickOnceVersion()
+        {
+            if (ApplicationDeployment.IsNetworkDeployed)
+                return ApplicationDeployment.CurrentDeployment.CurrentVersion;
+            return new System.Version();
+        }
+
         private void StartupHandler(object sender, StartupEventArgs e)
         {
             // Apply Elysium theme
