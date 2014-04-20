@@ -53,39 +53,90 @@ namespace SynologyWebApi
     /// </summary>
     public class DownloadStationApi : INotifyPropertyChanged
     {
+        private Object _Mutex = new Object();
+        private Account _Account;
+ 
         /// <summary>
         /// Base HTTP address used for communicating the the download station.
         /// </summary>
-        public string Address { get; set; }
+        public string Address 
+        { 
+            get { return _Account.Address; }
+            set
+            {
+                _Account.Address = value;
+                NotifyPropertyChanged("Address");
+            }
+        }
 
         /// <summary>
-        /// 
+        /// User account used for this download station session.
+        /// </summary>
+        public Account UserAccount 
+        {
+            get
+            {
+                return _Account;
+            }
+            set
+            {
+                _Account = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Holds true if account connection is using https.
         /// </summary>
         public bool UseHTTPS 
         {
-            get { return _UseHTTPS; }
+            get { return _Account.UseHTTPS; }
             set
             {
-                _UseHTTPS = value;
-                NotifyPropertyChanged();
-            } 
+                _Account.UseHTTPS = value;
+                NotifyPropertyChanged("UseHTTPS");
+            }
+
         }
-        private bool _UseHTTPS = false;
 
         /// <summary>
         /// 
         /// </summary>
-        public bool TrustedConnection { get; set; }
+        public bool TrustedConnection 
+        { 
+            get { return _Account.TrustedConnection; } 
+            set
+            {
+                _Account.TrustedConnection = value;
+                NotifyPropertyChanged("TrustedConnection");
+            }
+        }
 
         /// <summary>
         /// Holds the username used for a logging into a a new session.
         /// </summary>
-        public string Username { get; set; }
+        public string Username 
+        { 
+            get { return _Account.Username; }
+            set
+            {
+                _Account.Username = value;
+                NotifyPropertyChanged("Username");
+            }
+        }
 
         /// <summary>
         /// Holds the password used for a logging into a a new session.
         /// </summary>
-        public string Password { get; set; }
+        public string Password 
+        {
+            get { return _Account.Password; }
+            set
+            {
+                _Account.Password = value;
+                NotifyPropertyChanged("Password");
+            }
+        }
 
         /// <summary>
         /// Provides an information string for an ongoing connection.
@@ -150,7 +201,7 @@ namespace SynologyWebApi
         {
             get
             {
-                lock (this)
+                lock (_Mutex)
                 {
                     return TaskCollectionValue;
                 }
@@ -166,11 +217,11 @@ namespace SynologyWebApi
         {
             get
             {
-                lock (this) { return IsIdleValue; }
+                lock (_Mutex) { return IsIdleValue; }
             }
             set
             {
-                lock (this) { IsIdleValue = value; }
+                lock (_Mutex) { IsIdleValue = value; }
             }
         }
 
@@ -184,14 +235,14 @@ namespace SynologyWebApi
         {
             get
             {
-                lock (this)
+                lock (_Mutex)
                 {
                     return this.ProgressMessageValue;
                 }
             }
             set
             {
-                lock (this)
+                lock (_Mutex)
                 {
                     if (value != this.ProgressMessageValue)
                     {
@@ -240,12 +291,18 @@ namespace SynologyWebApi
             NotifyPropertyChanged();
         }
 
+        public DownloadStationApi(Account account )
+        {
+            if(account == null)
+                _Account = new Account();
+            else
+                _Account = account;
+            ProgressMessageValue = "";
+        }
+
         public DownloadStationApi()
         {
-            Address = "";
-            UseHTTPS = false;
-            Username = "";
-            Password = "";
+            _Account = new Account();
             ProgressMessageValue = "";
         }
 
@@ -272,8 +329,6 @@ namespace SynologyWebApi
             return ((Username != "") && (Password != ""));
         }
 
-        private string SessionIDValue;
-
         /// <summary>
         /// Session ID of ongoing session.
         /// </summary>
@@ -281,16 +336,16 @@ namespace SynologyWebApi
         {
             get
             {
-                lock (this)
+                lock (_Mutex)
                 {
-                    return SessionIDValue;
+                    return _Account.SessionId;
                 }
             }
             set
             {
-                lock (this)
+                lock (_Mutex)
                 {
-                    SessionIDValue = value;
+                    _Account.SessionId = value;
                 }
             }
         }

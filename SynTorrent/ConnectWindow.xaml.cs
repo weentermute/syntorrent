@@ -34,13 +34,6 @@ namespace SynTorrent
             WebApi.LoginEvent += Login_FinishedAsync;
             WebApi.ProgressEvent += UpdateProgress_Async;
 
-            // Get default settings
-            WebApi.Username = Properties.Settings.Default.Username;
-            WebApi.Address = Properties.Settings.Default.Address;
-            WebApi.UseHTTPS = Properties.Settings.Default.UseHTTPS;
-            WebApi.SessionID = Properties.Settings.Default.SessionID;
-            WebApi.TrustedConnection = Properties.Settings.Default.TrustedConnection;
-
             WebApi.VerifyNotify();
 
             // Choose initial focus
@@ -133,11 +126,8 @@ namespace SynTorrent
             if(e.Success)
             {
                 // Successful login, store settings
-                Properties.Settings.Default.Username = WebApi.Username;
-                Properties.Settings.Default.Address = WebApi.Address;
-                Properties.Settings.Default.SessionID = WebApi.SessionID;
-                Properties.Settings.Default.UseHTTPS = WebApi.UseHTTPS;
-                Properties.Settings.Default.TrustedConnection = WebApi.TrustedConnection;
+                WebApi.Password = "";
+                App.SessionManager.Sessions.AddSession(WebApi);
 
                 // Close window after 1 sec
                 DispatcherTimer timer = new DispatcherTimer();

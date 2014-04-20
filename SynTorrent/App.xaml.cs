@@ -11,6 +11,7 @@ using SingleInstanceApplication;
 using System.Reflection;
 using System.Deployment.Application;
 using System.Web;
+using SynologyWebApi;
 
 namespace SynTorrent
 {
@@ -38,6 +39,9 @@ namespace SynTorrent
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            SynTorrent.Properties.Settings.Default.AccountList.Clear();
+            SynTorrent.Properties.Settings.Default.AccountList.AddRange(SessionManager.Accounts);
+
             // Save user settings
             SynTorrent.Properties.Settings.Default.Save();
         }
@@ -54,6 +58,15 @@ namespace SynTorrent
                 return; 
             }
             base.OnStartup(e);
+
+            // Prepare session manager
+            // Get default settings
+            AccountList accounts = SynTorrent.Properties.Settings.Default.AccountList;
+            if (accounts == null)
+            {
+                SynTorrent.Properties.Settings.Default.AccountList = new AccountList();
+            }
+            SessionManager.Initialize(SynTorrent.Properties.Settings.Default.AccountList);
         }
 
         /// <summary>
@@ -78,5 +91,6 @@ namespace SynTorrent
             Dispatcher.Invoke(d, true);
         }
 
+        static public DownloadStationManager SessionManager = new DownloadStationManager();
     }
 }
