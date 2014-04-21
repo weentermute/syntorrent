@@ -16,6 +16,7 @@ namespace SynologyWebApi
         public ConnectionViewModel(DownloadStationApi session)
         {
             _WebSession = session;
+            _WebSession.PropertyChanged += OnSessionPropertyChanged;
         }
 
         public string ConnectionId
@@ -55,7 +56,16 @@ namespace SynologyWebApi
 
         #region Private Members
 
-        private DownloadStationApi _WebSession; 
+        private DownloadStationApi _WebSession;
+
+        void OnSessionPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e == null)
+                return;
+
+            if (e.PropertyName == "ProgressMessage")
+                OnPropertyChanged("LastMessage");
+        }
 
         #endregion
     }

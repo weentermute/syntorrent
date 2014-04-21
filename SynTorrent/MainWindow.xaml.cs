@@ -34,6 +34,8 @@ namespace SynTorrent
             RefreshListTimer.Interval = TimeSpan.FromSeconds(1);
             RefreshListTimer.Tick += RefreshListTimerTick;
 
+            SessionsControl.ConnectionsList.ItemsSource = App.SessionManager.Sessions;
+
             // Show login on startup
             ShowLogin();
 

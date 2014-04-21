@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Height="335" Width="310">
+             mc:Ignorable="d" Height="335" Width="310"
+             Background="{DynamicResource BackgroundBrush}"
+            Foreground="{DynamicResource ForegroundBrush}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32.8"/>
@@ -12,12 +14,12 @@
         <StackPanel Height="33" VerticalAlignment="Top">
             <Button x:Name="AddButton" Content="Add..." Click="AddButton_Click"/>
         </StackPanel>
-        <ListView x:Name="ConnectionsList" Margin="10,9.8,10,10" Grid.Row="1">
+        <ListView x:Name="ConnectionsList" Margin="0" Grid.Row="1" BorderThickness="0">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock Text="{Binding ConnectionId}" FontWeight="Bold" />
-                        <TextBlock Text="{Binding LastMessage}" />
+                        <TextBlock Text="{Binding ConnectionId}" FontWeight="Bold" Foreground="#FFBFBFBF" />
+                        <TextBlock Text="{Binding LastMessage}" Foreground="#FF9B9B9B" FontSize="11" />
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

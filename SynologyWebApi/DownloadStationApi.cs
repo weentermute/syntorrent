@@ -247,7 +247,7 @@ namespace SynologyWebApi
                     if (value != this.ProgressMessageValue)
                     {
                         this.ProgressMessageValue = value;
-                        NotifyPropertyChanged();
+                        NotifyPropertyChanged("ProgressMessage");
                     }                
                 }
                 if (this.ProgressEvent != null)

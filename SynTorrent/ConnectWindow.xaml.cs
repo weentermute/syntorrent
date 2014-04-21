@@ -21,11 +21,14 @@ namespace SynTorrent
     /// </summary>
     public partial class ConnectWindow : Elysium.Controls.Window
     {
-        public ConnectWindow(DownloadStationApi api)
+        public ConnectWindow(DownloadStationApi api = null)
         {
             InitializeComponent();
 
-            WebApi = api;
+            if (api != null)
+                WebApi = api;
+            else
+                WebApi = new DownloadStationApi();
             DataContext = WebApi;
 
             // Make asynchronous connections to be dispatched into the UI thread

@@ -27,7 +27,8 @@ namespace SynTorrent
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-
+            ConnectWindow win = new ConnectWindow();
+            win.ShowDialog();
         }
     }
 }
