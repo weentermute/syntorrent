@@ -40,8 +40,6 @@ namespace SynologyWebApi
             get { return _WebSession; }
         }
 
-        public DownloadStationApi WebSession { get { return _WebSession; } }
-
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -71,7 +69,7 @@ namespace SynologyWebApi
     }
 
     /// <summary>
-    /// 
+    /// Represents an observable list of connection sessions.
     /// </summary>
     public class ConnectionViewModelList : ObservableCollection<ConnectionViewModel>
     {
@@ -79,9 +77,25 @@ namespace SynologyWebApi
         {
         }
 
-        public void AddSession(DownloadStationApi session)
+        /// <summary>
+        /// Tests whether a session with the same user Id is stored in the collection.
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        public bool Has(DownloadStationApi session)
         {
-            Add(new ConnectionViewModel(session));
+            return this.Any(p => p.Session.UserAccount.Id == session.UserAccount.Id);
+        }
+
+        public bool AddSession(DownloadStationApi session)
+        {
+            // Add session only user ID is not present
+            if( !this.Any( p => p.Session.UserAccount.Id == session.UserAccount.Id ))
+            {
+                Add(new ConnectionViewModel(session));
+                return true;
+            }
+            return false;
         }
     }
 }

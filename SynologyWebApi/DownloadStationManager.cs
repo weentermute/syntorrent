@@ -19,7 +19,7 @@ namespace SynologyWebApi
         }
 
         /// <summary>
-        /// Use to to initialize from an existing list of stored
+        /// Use to initialize from an existing list of stored
         /// accounts.
         /// </summary>
         /// <param name="accounts"></param>
@@ -28,6 +28,34 @@ namespace SynologyWebApi
             foreach(var account in accounts)
             {
                 AddAccount(account);
+            }
+        }
+
+        /// <summary>
+        /// Performs an synchronous login with all sessions.
+        /// </summary>
+        /// <returns></returns>
+        public async Task LoginAsync()
+        {
+            // Create a query that, when executed, returns a collection of login tasks.
+            IEnumerable<Task<bool>> loginTasksQuery =
+                from connection in _SessionList select this.LoginAsync(connection.Session);
+
+            // Use ToList to execute the query and start the tasks. 
+            List<Task<bool>> loginTasks = loginTasksQuery.ToList();
+
+            // Add a loop to process the tasks one at a time until none remain. 
+            while (loginTasks.Count > 0)
+            {
+                // Identify the first task that completes.
+                Task<bool> firstFinishedTask = await Task.WhenAny(loginTasks);
+
+                // Remove the selected task from the list so that you don't 
+                // process it more than once.
+                loginTasks.Remove(firstFinishedTask);
+
+                // Await the completed task. 
+                bool success = await firstFinishedTask;
             }
         }
 
@@ -42,8 +70,8 @@ namespace SynologyWebApi
             if(id != "")
             {
                 var session = new DownloadStationApi(account);
-                _SessionList.AddSession(session);
-                return session;
+                if(_SessionList.AddSession(session))
+                    return session;
             }
             return null;
         }
@@ -70,6 +98,18 @@ namespace SynologyWebApi
             {
                 return _SessionList;
             }
+        }
+
+        private async Task<bool> LoginAsync(DownloadStationApi session)
+        {
+            ApiVersionInfo info = await session.QueryApiInfoAsync();
+
+            if (info != null)
+            {
+                return await session.LoginAsync();
+            }
+
+            return false;
         }
 
         // This method is called by the Set accessors of each property. 

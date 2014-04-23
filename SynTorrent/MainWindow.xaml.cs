@@ -34,10 +34,11 @@ namespace SynTorrent
             RefreshListTimer.Interval = TimeSpan.FromSeconds(1);
             RefreshListTimer.Tick += RefreshListTimerTick;
 
+            // Bind list of session with list view
             SessionsControl.ConnectionsList.ItemsSource = App.SessionManager.Sessions;
 
             // Show login on startup
-            ShowLogin();
+            // ShowLogin();
 
             // Load layout
             var userPrefs = Properties.Settings.Default;
@@ -68,6 +69,14 @@ namespace SynTorrent
             // Set version info
             if (App.ClickOnceVersion() != new System.Version())
                 Title += " " + App.ClickOnceVersion().ToString();
+
+            // Start login tasks
+            StartLoginTasksAsync();
+        }
+
+        private async void StartLoginTasksAsync()
+        {
+            await App.SessionManager.LoginAsync();
         }
 
         private void RefreshListTimerTick(object sender, EventArgs e)

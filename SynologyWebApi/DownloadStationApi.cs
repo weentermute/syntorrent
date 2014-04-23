@@ -8,6 +8,7 @@ using System.Web.Script.Serialization;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace SynologyWebApi
 {
@@ -190,22 +191,6 @@ namespace SynologyWebApi
             if (Errors.ContainsKey(code))
                 return Errors[code];
             return "Unknown error code " + code;
-        }
-
-        private TaskCollection TaskCollectionValue = new TaskCollection();
-
-        /// <summary>
-        /// Holds download task collection retrieved during the last query.
-        /// </summary>
-        public TaskCollection TaskCollection
-        {
-            get
-            {
-                lock (_Mutex)
-                {
-                    return TaskCollectionValue;
-                }
-            }
         }
 
         private bool IsIdleValue = false;
@@ -419,6 +404,14 @@ namespace SynologyWebApi
             return null;
         }
 
+        public async Task<ApiVersionInfo> QueryApiInfoAsync()
+        {
+            var task = Task.Factory.StartNew<ApiVersionInfo>(this.QueryApiInfo);
+            await task;
+            return task.Result;
+        }
+
+
         public delegate void LoginHandler(object sender, ApiRequestResultEventArgs e);
         public event LoginHandler LoginEvent;
 
@@ -428,10 +421,12 @@ namespace SynologyWebApi
         /// <returns></returns>
         public bool Login()
         {
+            ProgressMessage = "Connecting...";
             IsIdle = false;
             // GET /webapi/auth.cgi?api=SYNO.API.Auth&version=2&method=login&account=admin&passwd=12345&session=DownloadStation&format=sid
             if(SessionID != null && SessionID != "")
             {
+                ProgressMessage = "Connected";
                 if (LoginEvent != null)
                     LoginEvent(this, new ApiRequestResultEventArgs(true));
                 IsIdle = true;
@@ -492,6 +487,15 @@ namespace SynologyWebApi
             return false;
         }
 
+        public async Task<bool> LoginAsync()
+        {
+            var loginTask = Task.Factory.StartNew<bool>(this.Login);
+
+            await loginTask;
+
+            return loginTask.Result;
+        }
+
         public delegate void GetTaskListHandler(object sender, ApiRequestResultEventArgs e);
         public event GetTaskListHandler GetTaskListEvent;
 
@@ -527,8 +531,6 @@ namespace SynologyWebApi
                     {
                         collection.Add(new DownloadTask(task));
                     }
-
-                    TaskCollectionValue = collection;
 
                     if (GetTaskListEvent != null)
                         GetTaskListEvent(this, new ApiRequestResultEventArgs(true));
