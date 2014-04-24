@@ -199,7 +199,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}"/>
-            <DataGrid x:Name="TaskList" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding TaskCollectionView.View, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Style="{DynamicResource DataGridStyle1}" AutoGeneratingColumn="TaskList_AutoGeneratingColumn" Grid.Column="2" BorderThickness="0" SelectionChanged="TaskList_SelectionChanged" IsEnabled="{Binding IsConnected, Mode=OneWay}" CanUserResizeRows="False" PreviewKeyDown="TaskList_PreviewKeyDown">
+            <DataGrid x:Name="TaskList" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding TaskCollectionView.View, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Style="{DynamicResource DataGridStyle1}" AutoGeneratingColumn="TaskList_AutoGeneratingColumn" Grid.Column="2" BorderThickness="0" SelectionChanged="TaskList_SelectionChanged" CanUserResizeRows="False" PreviewKeyDown="TaskList_PreviewKeyDown">
                 <DataGrid.RowStyle>
                     <Style TargetType="{x:Type DataGridRow}">
                         <Setter Property="Background">

@@ -78,6 +78,19 @@ namespace SynologyWebApi
         }
 
         /// <summary>
+        /// Finds a session with a given account id, if any.
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        public DownloadStationApi FindSession(string accountId)
+        {
+            ConnectionViewModel connection = this.FirstOrDefault(p => p.Session.UserAccount.Id == accountId);
+            if (connection != null)
+                return connection.Session;
+            return null;
+        }
+
+        /// <summary>
         /// Tests whether a session with the same user Id is stored in the collection.
         /// </summary>
         /// <param name="session"></param>

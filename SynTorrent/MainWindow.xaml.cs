@@ -22,23 +22,14 @@ namespace SynTorrent
 
             WebApi = (DownloadStationApi)DataContext;
 
-            DownloadStationApi.GetTaskListHandler queryList = this.GetTaskList_Finished;
-            WebApi.GetTaskListEvent += (object sender, ApiRequestResultEventArgs e) => Dispatcher.BeginInvoke(queryList, sender, e);
-
-            DownloadStationApi.LoginHandler login = this.Login_Finished;
-            WebApi.LoginEvent += (object sender, ApiRequestResultEventArgs e) => Dispatcher.BeginInvoke(login, sender, e);
-
             // Initialize the filter task view
-            TaskCollectionFilterViewValue = new TaskCollectionFilterView(TaskCollectionValue, FilterControl.ActiveFilters);
+            TaskCollectionFilterViewValue = new TaskCollectionFilterView(App.SessionManager.AllTasks, FilterControl.ActiveFilters);
 
             RefreshListTimer.Interval = TimeSpan.FromSeconds(1);
             RefreshListTimer.Tick += RefreshListTimerTick;
 
             // Bind list of session with list view
             SessionsControl.ConnectionsList.ItemsSource = App.SessionManager.Sessions;
-
-            // Show login on startup
-            // ShowLogin();
 
             // Load layout
             var userPrefs = Properties.Settings.Default;
@@ -79,10 +70,20 @@ namespace SynTorrent
             await App.SessionManager.LoginAsync();
         }
 
+        private async void UpdateAllTasksAsync()
+        {
+            await App.SessionManager.CollectAllTasks();
+
+            // Update stats
+            UpdateStatistics();
+
+            // Update filter tree
+            FilterControl.FiltersTreeViewModel.UpdateTaskCount(App.SessionManager.AllTasks);
+        }
+
         private void RefreshListTimerTick(object sender, EventArgs e)
         {
-            if (WebApi.IsConnected && WebApi.IsIdle)
-                GetTaskList_Start(this);
+            UpdateAllTasksAsync();
         }
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
@@ -91,38 +92,6 @@ namespace SynTorrent
             WebApi.Logout();
             Properties.Settings.Default.SessionID = "";
             ShowLogin();
-        }
-
-        private void Login_Finished(object sender, ApiRequestResultEventArgs e)
-        {
-            if(e.Success)
-            {
-                // Login successful, start retrieving task list
-                GetTaskList_Start(this);
-            }
-        }
-
-        private void GetTaskList_Start(object sender)
-        {            
-            GetListTask = new Task<TaskCollection>(WebApi.GetTaskList);
-            GetListTask.Start();
-        }
-
-        private void GetTaskList_Finished(object sender, ApiRequestResultEventArgs e)
-        {
-            var result = GetListTask.Result;
-            if (result != null)
-            {
-                // Update main list with changed download tasks
-                TaskCollection.UpdateWith(result);
-                WebApi.VerifyNotify();
-
-                // Update stats
-                UpdateStatistics();
-
-                // Update filter tree
-                FilterControl.FiltersTreeViewModel.UpdateTaskCount(TaskCollection);
-            }
         }
 
         private void UpdateStatistics()
@@ -135,24 +104,7 @@ namespace SynTorrent
 
         /// Web session interface
         private DownloadStationApi WebApi;
-        private Task<TaskCollection> GetListTask;
-        private TaskCollection TaskCollectionValue = new TaskCollection();
         private TaskCollectionFilterView TaskCollectionFilterViewValue;
-
-        /// <summary>
-        /// Collection of download tasks
-        /// </summary>
-        public TaskCollection TaskCollection
-        {
-            get
-            {
-                return TaskCollectionValue;
-            }
-            set
-            {
-                TaskCollectionValue = value;
-            }
-        }
 
         public TaskCollectionFilterView TaskCollectionView
         {
@@ -164,12 +116,6 @@ namespace SynTorrent
             {
                 TaskCollectionFilterViewValue = value;
             }
-        }
-
-        private void RefreshButton_Click(object sender, RoutedEventArgs e)
-        {
-            if( WebApi.SessionID != "")
-                GetTaskList_Start(this);
         }
 
         private static Regex _RegExCamelCase = new Regex("([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))");

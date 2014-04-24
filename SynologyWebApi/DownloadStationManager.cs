@@ -32,7 +32,7 @@ namespace SynologyWebApi
         }
 
         /// <summary>
-        /// Performs an synchronous login with all sessions.
+        /// Performs an asynchronous login with all sessions.
         /// </summary>
         /// <returns></returns>
         public async Task LoginAsync()
@@ -56,6 +56,40 @@ namespace SynologyWebApi
 
                 // Await the completed task. 
                 bool success = await firstFinishedTask;
+            }
+        }
+
+        /// <summary>
+        /// Collects all download tasks asynchronously and updates the AllTasks field.
+        /// </summary>
+        /// <returns></returns>
+        public async Task CollectAllTasks()
+        {
+            // Create a query that, when executed, returns a collection of tasks.
+            IEnumerable<Task<TaskCollection>> tasksQuery =
+                from connection in _SessionList where connection.Session.IsConnected select connection.Session.GetTaskListAsync();
+
+            // Use ToList to execute the query and start the tasks. 
+            List<Task<TaskCollection>> tasks = tasksQuery.ToList();
+
+            // Add a loop to process the tasks one at a time until none remain. 
+            while (tasks.Count > 0)
+            {
+                // Identify the first task that completes.
+                Task<TaskCollection> firstFinishedTask = await Task.WhenAny(tasks);
+
+                // Remove the selected task from the list so that you don't 
+                // process it more than once.
+                tasks.Remove(firstFinishedTask);
+
+                // Await the completed task. 
+                TaskCollection downloadTasks = await firstFinishedTask;
+
+                if( downloadTasks != null)
+                {
+                    // Update collection with session's download tasks
+                    AllTasks.UpdateWith(downloadTasks, downloadTasks.AccountId);
+                }
             }
         }
 
@@ -85,6 +119,11 @@ namespace SynologyWebApi
                      select item.Session.UserAccount).ToList<Account>();
             }
         }
+
+        /// <summary>
+        /// Collected tasks from all sessions.
+        /// </summary>
+        public TaskCollection AllTasks = new TaskCollection();
 
         // Boiler plate code to have properties trigger their updates
         public event PropertyChangedEventHandler PropertyChanged;

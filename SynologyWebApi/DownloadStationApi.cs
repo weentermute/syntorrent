@@ -159,7 +159,10 @@ namespace SynologyWebApi
         {
             get
             {
-                return SessionID != "";
+                lock (_Mutex)
+                {
+                    return SessionID != "" && ApiInfo != null;
+                }
             }
         }
 
@@ -524,12 +527,13 @@ namespace SynologyWebApi
                 if (dict["success"] == true)
                 {
                     TaskCollection collection = new TaskCollection();
+                    collection.AccountId = _Account.Id;
 
                     dynamic tasks = dict["data"]["tasks"];
 
                     foreach (dynamic task in tasks)
                     {
-                        collection.Add(new DownloadTask(task));
+                        collection.Add(new DownloadTask(task, _Account.Id));
                     }
 
                     if (GetTaskListEvent != null)
@@ -561,6 +565,13 @@ namespace SynologyWebApi
                 GetTaskListEvent(this, new ApiRequestResultEventArgs(false));
             IsIdle = true;
             return null;
+        }
+
+        public async Task<TaskCollection> GetTaskListAsync()
+        {
+            var task = Task.Factory.StartNew<TaskCollection>(this.GetTaskList);
+            await task;
+            return task.Result;
         }
 
         /// <summary>

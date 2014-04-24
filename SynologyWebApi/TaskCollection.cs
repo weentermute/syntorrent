@@ -15,7 +15,7 @@ namespace SynologyWebApi
         /// 
         /// </summary>
         /// <param name="other"></param>
-        public void UpdateWith(TaskCollection other)
+        public void UpdateWith(TaskCollection other, string accountId)
         {
             CreateIndexing();
             other.CreateIndexing();
@@ -28,34 +28,40 @@ namespace SynologyWebApi
 
             foreach(string id in thisIds )
             {
-                DownloadTask otherItem = other.FindTask(id);
-                if(otherItem != null)
+                DownloadTask thisItem = FindTask(id);
+                // Only consider tasks of a given connection Id
+                if(thisItem.AccountId == accountId)
                 {
-                    DownloadTask thisItem = FindTask(id);
-                    // Compare data
-                    if( !(thisItem.Equals(otherItem) ) )
+                    DownloadTask otherItem = other.FindTask(id);
+                    if (otherItem != null)
                     {
-                        // Data changed, replace
-                        Int32 index = IndexOf(thisItem);                        
-                        SetItem(index, otherItem);
-                        modified++;
+                        // Compare data
+                        if (!(thisItem.Equals(otherItem)))
+                        {
+                            // Data changed, replace
+                            Int32 index = IndexOf(thisItem);
+                            SetItem(index, otherItem);
+                            modified++;
+                        }
+                    }
+                    else
+                    {
+                        // Remove
+                        toRemove.Add(thisItem);
+                        removed++;
                     }
                 }
-                else
-                {
-                    // Remove
-                    DownloadTask thisItem = FindTask(id);
-                    toRemove.Add(thisItem);
-                    removed++;
-               }
             }
 
             foreach (DownloadTask otherTask in other)
             {
-                if(!TaskIndexing.ContainsKey(otherTask.Id))
+                if(otherTask.AccountId == accountId)
                 {
-                    Add(otherTask);
-                    added++;
+                    if (!TaskIndexing.ContainsKey(otherTask.Id))
+                    {
+                        Add(otherTask);
+                        added++;
+                    }
                 }
             }
 
@@ -63,8 +69,13 @@ namespace SynologyWebApi
             foreach (DownloadTask task in toRemove)
                 Remove(task);
 
-            System.Console.WriteLine("Added={0} Removed={1} Modified={2}", added, removed, modified);
+            System.Console.WriteLine("Account={3} Added={0} Removed={1} Modified={2}", added, removed, modified, accountId);
         }
+
+        /// <summary>
+        /// Set to account Id if collection represents tasks coming from a specific connection.
+        /// </summary>
+        public string AccountId = "";
 
         private Dictionary<string, DownloadTask> TaskIndexing = new Dictionary<string,DownloadTask>();
 
