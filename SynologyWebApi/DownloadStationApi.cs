@@ -579,29 +579,42 @@ namespace SynologyWebApi
         /// </summary>
         public void Logout()
         {
-            if (SessionID != null && SessionID != "")
+            try
             {
-                ProgressMessage = "Logging out...";
-
-                // GET /webapi/auth.cgi?api=SYNO.API.Auth&version=1&method=logout&session=DownloadStation
-                HttpRequest syno = new HttpRequest();
-                syno.GetParameters.Add("_sid", SessionID);
-                syno.GetParameters.Add("api", "SYNO.API.Auth");
-                syno.GetParameters.Add("version", "1");
-                syno.GetParameters.Add("method", "logout");
-                syno.GetParameters.Add("session", "DownloadStation");
-
-                string jsonResponse = syno.Get(URL + "auth.cgi");
-
-                var jss = new JavaScriptSerializer();
-                var dict = jss.Deserialize<Dictionary<string, dynamic>>(jsonResponse);
-
-                if (dict["success"] == true)
+                if (SessionID != null && SessionID != "")
                 {
-                    ProgressMessage = "Not logged in";
-                    SessionID = "";
+                    ProgressMessage = "Logging out...";
+
+                    // GET /webapi/auth.cgi?api=SYNO.API.Auth&version=1&method=logout&session=DownloadStation
+                    HttpRequest syno = new HttpRequest();
+                    syno.GetParameters.Add("_sid", SessionID);
+                    syno.GetParameters.Add("api", "SYNO.API.Auth");
+                    syno.GetParameters.Add("version", "1");
+                    syno.GetParameters.Add("method", "logout");
+                    syno.GetParameters.Add("session", "DownloadStation");
+
+                    string jsonResponse = syno.Get(URL + "auth.cgi");
+
+                    var jss = new JavaScriptSerializer();
+                    var dict = jss.Deserialize<Dictionary<string, dynamic>>(jsonResponse);
+
+                    if (dict["success"] == true)
+                    {
+                        ProgressMessage = "Not logged in";
+                        SessionID = "";
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                ProgressMessage = ex.Message;
+            }
+        }
+
+        public async Task LogoutAsync()
+        {
+            var task = Task.Factory.StartNew(this.Logout);
+            await task;
         }
 
         public delegate void CreateDownloadTaskHandler(object sender, ApiRequestResultEventArgs e);

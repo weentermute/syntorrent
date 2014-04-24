@@ -11,10 +11,11 @@
             <RowDefinition Height="32.8"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Height="33" VerticalAlignment="Top">
-            <Button x:Name="AddButton" Content="Add..." Click="AddButton_Click"/>
+        <StackPanel Height="33" VerticalAlignment="Top" Orientation="Horizontal">
+            <Button x:Name="AddButton" Content="Add Account..." Click="AddButton_Click"/>
+            <Button x:Name="RemoveButton" Content="Remove" Click="RemoveButton_Click" IsEnabled="False"/>
         </StackPanel>
-        <ListView x:Name="ConnectionsList" Margin="0" Grid.Row="1" BorderThickness="0">
+        <ListView x:Name="ConnectionsList" Margin="0" Grid.Row="1" BorderThickness="0" SelectionChanged="ConnectionsList_SelectionChanged">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
@@ -24,6 +25,5 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-
     </Grid>
 </UserControl>

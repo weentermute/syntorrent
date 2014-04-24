@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SynologyWebApi;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,32 @@ namespace SynTorrent
         {
             ConnectWindow win = new ConnectWindow();
             win.ShowDialog();
+        }
+
+        private async void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            RemoveButton.IsEnabled = false;
+            var items = ConnectionsList.SelectedItems;
+            List<ConnectionViewModel> list = new List<ConnectionViewModel>();
+            foreach( var item in items)
+            {
+                ConnectionViewModel connection = item as ConnectionViewModel;
+                if( connection != null)
+                {
+                    await connection.Session.LogoutAsync();
+                    list.Add(connection);
+                }
+            }
+
+            foreach (var item in list)
+                App.SessionManager.Sessions.Remove(item);
+
+            RemoveButton.IsEnabled = ConnectionsList.SelectedItems.Count > 0;
+        }
+
+        private void ConnectionsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RemoveButton.IsEnabled = ConnectionsList.SelectedItems.Count > 0;
         }
     }
 }
