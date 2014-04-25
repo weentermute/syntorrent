@@ -63,7 +63,7 @@ namespace SynologyWebApi
         /// Collects all download tasks asynchronously and updates the AllTasks field.
         /// </summary>
         /// <returns></returns>
-        public async Task CollectAllTasks()
+        public async Task CollectAllTasksAsync()
         {
             // Create a query that, when executed, returns a collection of tasks.
             IEnumerable<Task<TaskCollection>> tasksQuery =
@@ -87,10 +87,35 @@ namespace SynologyWebApi
 
                 if( downloadTasks != null)
                 {
-                    // Update collection with session's download tasks
-                    AllTasks.UpdateWith(downloadTasks, downloadTasks.AccountId);
+                    // Check that the session of the task collection is still valid
+                    DownloadStationApi session = Sessions.FindSession(downloadTasks.AccountId);
+                    if(session != null)
+                    {
+                        if(session.IsConnected)
+                        {
+                            // Update collection with session's download tasks
+                            AllTasks.UpdateWith(downloadTasks, downloadTasks.AccountId);
+                        }
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Performs a logout for a given session.
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
+        public async Task LogoutAsync(DownloadStationApi session)
+        {
+            string id = session.UserAccount.Id;
+
+            await session.LogoutAsync();
+
+            // Update task list with empty collection to remove tasks for that connection
+            TaskCollection empty = new TaskCollection();
+
+            AllTasks.UpdateWith(empty, id);
         }
 
         /// <summary>

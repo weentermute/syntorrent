@@ -42,7 +42,7 @@ namespace SynTorrent
                 ConnectionViewModel connection = item as ConnectionViewModel;
                 if( connection != null)
                 {
-                    await connection.Session.LogoutAsync();
+                    await App.SessionManager.LogoutAsync(connection.Session);
                     list.Add(connection);
                 }
             }

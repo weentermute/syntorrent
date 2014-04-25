@@ -72,7 +72,7 @@ namespace SynTorrent
 
         private async void UpdateAllTasksAsync()
         {
-            await App.SessionManager.CollectAllTasks();
+            await App.SessionManager.CollectAllTasksAsync();
 
             // Update stats
             UpdateStatistics();
