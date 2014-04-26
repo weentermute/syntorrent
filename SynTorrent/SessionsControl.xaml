@@ -6,24 +6,105 @@
              mc:Ignorable="d" Height="335" Width="310"
              Background="{DynamicResource BackgroundBrush}"
             Foreground="{DynamicResource ForegroundBrush}">
+    
+    <UserControl.Resources>
+        <DataTemplate x:Key="SessionDataTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="160" />
+                </Grid.ColumnDefinitions>
+                <Path Data="{Binding Image}" Stretch="Uniform" Width="28" Height="28" 
+                    Fill="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem, Mode=FindAncestor}, Path=Foreground}" />
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="{Binding ConnectionId}" FontSize="15"
+                               Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem, Mode=FindAncestor}, Path=Foreground}" />
+                    <TextBlock Text="{Binding LastMessage}" FontSize="11" 
+                               Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem, Mode=FindAncestor}, Path=Foreground}"
+                               TextWrapping="Wrap" Opacity="0.6" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="MetroListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Padding" Value="4,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FocusVisualStyle">
+                <Setter.Value>
+                    <Style>
+                        <Setter Property="Control.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Rectangle Margin="2" SnapsToDevicePixels="True" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="IsSelected" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Background" TargetName="Bd" Value="#FF2C2C2C"/>
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{x:Null}"/>
+                                <Setter Property="Foreground" Value="LightGray"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="False"/>
+                                    <Condition Property="IsSelected" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Background" TargetName="Bd" Value="{x:Null}"/>
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{x:Null}"/>
+                                <Setter Property="Foreground" Value="LightGray" />
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Background" TargetName="Bd" Value="#FF0072C6"/>
+                                <Setter Property="BorderBrush" TargetName="Bd" Value="{x:Null}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32.8"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Height="33" VerticalAlignment="Top" Orientation="Horizontal">
+        <StackPanel x:Name="ButtonPanel" Height="33" VerticalAlignment="Top" Orientation="Horizontal">
             <Button x:Name="AddButton" Content="Add Account..." Click="AddButton_Click"/>
             <Button x:Name="RemoveButton" Content="Remove" Click="RemoveButton_Click" IsEnabled="False"/>
         </StackPanel>
-        <ListView x:Name="ConnectionsList" Margin="0" Grid.Row="1" BorderThickness="0" SelectionChanged="ConnectionsList_SelectionChanged">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="{Binding ConnectionId}" FontWeight="Bold" Foreground="#FFBFBFBF" />
-                        <TextBlock Text="{Binding LastMessage}" Foreground="#FF9B9B9B" FontSize="11" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <ListBox x:Name="ConnectionsList" Margin="2" Grid.Row="1" BorderThickness="0" 
+                 SelectionChanged="ConnectionsList_SelectionChanged" 
+                 ItemTemplate="{DynamicResource SessionDataTemplate}"
+                 ItemContainerStyle="{DynamicResource MetroListBoxItemStyle}" 
+                 >
+        </ListBox>
     </Grid>
 </UserControl>
