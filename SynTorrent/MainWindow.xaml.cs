@@ -20,15 +20,13 @@ namespace SynTorrent
         {
             InitializeComponent();
 
-            WebApi = (DownloadStationApi)DataContext;
-
             // Initialize the filter task view
             TaskCollectionFilterViewValue = new TaskCollectionFilterView(App.SessionManager.AllTasks, FilterControl.ActiveFilters);
 
             RefreshListTimer.Interval = TimeSpan.FromSeconds(1);
             RefreshListTimer.Tick += RefreshListTimerTick;
 
-            // Bind list of session with list view
+            // Bind list of connections with list box control
             SessionsControl.ConnectionsList.ItemsSource = App.SessionManager.Sessions;
 
             // Load layout
@@ -88,9 +86,6 @@ namespace SynTorrent
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            // Log out
-            WebApi.Logout();
-            Properties.Settings.Default.SessionID = "";
             ShowLogin();
         }
 
@@ -102,8 +97,6 @@ namespace SynTorrent
             StatsControl.UpdateStatsAsync(tasks);
         }
 
-        /// Web session interface
-        private DownloadStationApi WebApi;
         private TaskCollectionFilterView TaskCollectionFilterViewValue;
 
         public TaskCollectionFilterView TaskCollectionView
@@ -151,16 +144,13 @@ namespace SynTorrent
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            CreateDownloadWindow createWindow = new CreateDownloadWindow(WebApi);
+            CreateDownloadWindow createWindow = new CreateDownloadWindow();
             createWindow.Owner = this;
             createWindow.ShowDialog();
         }
 
         private void TitleBarLoginButton_Click(object sender, RoutedEventArgs e)
         {
-            // Log out
-            WebApi.Logout();
-            Properties.Settings.Default.SessionID = "";
             ShowLogin();
         }
 
@@ -179,11 +169,12 @@ namespace SynTorrent
 
         private void ShowLogin()
         {
-            RefreshListTimer.Stop();
-            this.ConnectWindow = new ConnectWindow(WebApi);
-            ConnectWindow.ShowDialog();
-            this.ConnectWindow = null;
-            RefreshListTimer.Start();
+            if(this.ConnectWindow == null)
+            {
+                this.ConnectWindow = new ConnectWindow();
+                ConnectWindow.ShowDialog();
+                this.ConnectWindow = null;
+            }
         }
 
         private DispatcherTimer RefreshListTimer = new DispatcherTimer();
@@ -268,13 +259,13 @@ namespace SynTorrent
                 if (args[1].EndsWith(".application"))
                     return;
 
-                // Make sure we're logged in
-                if (WebApi.SessionID == "")
+                // Make sure we have at least one account
+                if (App.SessionManager.Sessions.Count == 0)
                     ShowLogin();
 
-                if (WebApi.SessionID != "")
+                if (App.SessionManager.Sessions.Count > 0)
                 {
-                    CreateDownloadWindow createWindow = new CreateDownloadWindow(WebApi);
+                    CreateDownloadWindow createWindow = new CreateDownloadWindow();
                     createWindow.UploadFiles.Add(args[1]);
                     createWindow.ShowDialog();
                 }
@@ -336,7 +327,7 @@ namespace SynTorrent
             }
         }
 
-        private void PauseButton_Click(object sender, RoutedEventArgs e)
+        private async void PauseButton_Click(object sender, RoutedEventArgs e)
         {
             // Get list of selected data items
             var selection = TaskList.SelectedItems;
@@ -351,11 +342,11 @@ namespace SynTorrent
 
             if (tasks.Count > 0)
             {
-                WebApi.PauseDownloadTasks(tasks);
+                await App.SessionManager.PauseDownloadTasksAsync(tasks);
             }
         }
 
-        private void ResumeButton_Click(object sender, RoutedEventArgs e)
+        private async void ResumeButton_Click(object sender, RoutedEventArgs e)
         {
             // Get list of selected data items
             var selection = TaskList.SelectedItems;
@@ -370,7 +361,7 @@ namespace SynTorrent
 
             if (tasks.Count > 0)
             {
-                WebApi.ResumeDownloadTasks(tasks);
+                await App.SessionManager.ResumeDownloadTasksAsync(tasks);
             }
         }
 
@@ -381,7 +372,7 @@ namespace SynTorrent
             DeleteButton.IsEnabled = CanDelete;
         }
 
-        private bool DeleteSelectedTasks()
+        private async void DeleteSelectedTasks()
         {
             // Get list of selected data items
             var selection = TaskList.SelectedItems;
@@ -398,14 +389,14 @@ namespace SynTorrent
             }
             else
             {
-                return false;
+                return;
             }
 
+            // Ask user before deleting any tasks
             var result = MessageWindow.Show(msg, "Delete Tasks", MessageBoxButton.YesNo);
 
             if (result == MessageBoxResult.Yes)
             {
-                // Ask user before deleting any tasks
                 List<DownloadTask> tasks = new List<DownloadTask>();
                 foreach (var item in selection)
                 {
@@ -416,12 +407,12 @@ namespace SynTorrent
 
                 if (tasks.Count > 0)
                 {
-                    WebApi.DeleteDownloadTasks(tasks);
-                    return true;
+                    await App.SessionManager.DeleteDownloadTasksAsync(tasks);
+                    return;
                 }
             }
 
-            return false;
+            return;
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)

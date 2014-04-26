@@ -35,7 +35,7 @@ namespace SynologyWebApi
         {
             get
             {
-                return _WebSession.LoginInfo;
+                return _WebSession.UserAccount.Id;
             }
         }
 
@@ -116,6 +116,17 @@ namespace SynologyWebApi
         public bool Has(DownloadStationApi session)
         {
             return this.Any(p => p.Session.UserAccount.Id == session.UserAccount.Id);
+        }
+
+        /// <summary>
+        /// Holds the number of connected sessions.
+        /// </summary>
+        public int ActiveConnectionCount
+        {
+            get 
+            {
+                return this.Count(p => p.Session.IsConnected);
+            }
         }
 
         public bool AddSession(DownloadStationApi session)

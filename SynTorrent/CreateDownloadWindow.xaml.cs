@@ -15,24 +15,23 @@ namespace SynTorrent
     /// </summary>
     public partial class CreateDownloadWindow : Elysium.Controls.Window
     {
-        public DownloadStationApi WebApi { get; set; }
-
-        public CreateDownloadWindow(DownloadStationApi api)
+        public CreateDownloadWindow()
         {
             InitializeComponent();
-
-            WebApi = api;
-            DataContext = WebApi;
-
-            WebApi.CreateDownloadTaskEvent += CreateTask_FinishedAsync;
-
-            WebApi.ProgressMessage = "";
 
             UrlTextBox.Focus();
 
             CanCreate = UrlTextBox.Text != "" || UploadFiles.Count > 0;
 
             UploadFilesListBox.ItemsSource = UploadFiles;
+
+            // Populate account box
+            AccountComboBox.ItemsSource = App.SessionManager.Sessions;
+            if (App.SessionManager.Sessions.Count > 0)
+            {
+                AccountComboBox.SelectedItem = App.SessionManager.Sessions[0];
+                DataContext = AccountComboBox.SelectedItem as DownloadStationApi;
+            }
 
             if(String.IsNullOrEmpty(UrlTextBox.Text))
             {
@@ -74,46 +73,33 @@ namespace SynTorrent
             set { SetValue(CanCreateProperty, value); }
         }
 
-        private void CreateButton_Click(object sender, RoutedEventArgs e)
+        private async void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            CreateButton.IsEnabled = false;           
+            var connection = AccountComboBox.SelectedItem as ConnectionViewModel;
+            if (connection == null)
+                return;
+
+            CreateButton.IsEnabled = false;
+
+            bool success = false;
+
             if(UrlTextBox.Text != "")
             {
                 var uri = UrlTextBox.Text;
-                var task = new Task<bool>(() => WebApi.CreateDownloadTask(uri));
-                task.Start();
+                success = success && await App.SessionManager.CreateDownloadTaskAsync(uri, connection.ConnectionId);
             }
             if (UploadFiles.Count > 0)
             {
                 foreach(var item in UploadFiles)
                 {
                     var file = (string)item;
-                    var task = new Task<bool>(() => WebApi.CreateDownloadTaskFromFile(file));
-                    task.Start();
+                    success = success && await App.SessionManager.CreateDownloadTaskFromFileAsync(file, connection.ConnectionId);
                 }
             }
-        }
 
-        private void CreateTask_FinishedAsync(object sender, ApiRequestResultEventArgs e)
-        {
-            DownloadStationApi.CreateDownloadTaskHandler createTask = this.CreateTask_Finished;
-            Dispatcher.BeginInvoke(createTask, sender, e);
-        }
-
-        private void CreateTask_Finished(object sender, ApiRequestResultEventArgs e)
-        {
-            if(e.Success)
-            {
-                if(IsVisible)
-                    this.Close();
-                WebApi.VerifyNotify();
-            }
             CreateButton.IsEnabled = true;
-        }
-
-        private void window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            WebApi.CreateDownloadTaskEvent -= CreateTask_FinishedAsync;
+            if (success && IsVisible)
+                this.Close();
         }
 
         private void SpecifyFileButton_Click(object sender, RoutedEventArgs e)
@@ -161,6 +147,15 @@ namespace SynTorrent
             catch
             {
                 return false;
+            }
+        }
+
+        private void AccountComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var connection = AccountComboBox.SelectedItem as ConnectionViewModel;
+            if (connection != null)
+            {
+                DataContext = connection.Session; 
             }
         }
     }

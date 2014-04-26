@@ -118,6 +118,86 @@ namespace SynologyWebApi
             AllTasks.UpdateWith(empty, id);
         }
 
+        public async Task<bool> CreateDownloadTaskAsync(string uri, string accountId)
+        {
+            var session = _SessionList.FindSession(accountId);
+            if(session != null)
+            {
+                return await session.CreateDownloadTaskAsync(uri);
+            }
+            return false;
+        }
+
+        public async Task<bool> CreateDownloadTaskFromFileAsync(string filePath, string accountId)
+        {
+            var session = _SessionList.FindSession(accountId);
+            if (session != null)
+            {
+                return await session.CreateDownloadTaskFromFileAsync(filePath);
+            }
+            return false;
+        }
+
+        public async Task<bool> PauseDownloadTasksAsync(IList<DownloadTask> tasks)
+        {
+            // Group task list by connection id
+            var accountTaskMap = new Dictionary<string, List<DownloadTask>>();
+            foreach(var task in tasks)
+                accountTaskMap[task.AccountId].Add(task);
+
+            foreach(var account in accountTaskMap)
+            {                
+                var session = _SessionList.FindSession(account.Key);
+                if(session != null)
+                {
+                    bool success = await session.PauseDownloadTasksAsync(account.Value);
+                    if (!success)
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        public async Task<bool> ResumeDownloadTasksAsync(IList<DownloadTask> tasks)
+        {
+            // Group task list by connection id
+            var accountTaskMap = new Dictionary<string, List<DownloadTask>>();
+            foreach (var task in tasks)
+                accountTaskMap[task.AccountId].Add(task);
+
+            foreach (var account in accountTaskMap)
+            {
+                var session = _SessionList.FindSession(account.Key);
+                if (session != null)
+                {
+                    bool success = await session.ResumeDownloadTasksAsync(account.Value);
+                    if (!success)
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        public async Task<bool> DeleteDownloadTasksAsync(IList<DownloadTask> tasks)
+        {
+            // Group task list by connection id
+            var accountTaskMap = new Dictionary<string, List<DownloadTask>>();
+            foreach (var task in tasks)
+                accountTaskMap[task.AccountId].Add(task);
+
+            foreach (var account in accountTaskMap)
+            {
+                var session = _SessionList.FindSession(account.Key);
+                if (session != null)
+                {
+                    bool success = await session.DeleteDownloadTasksAsync(account.Value);
+                    if (!success)
+                        return false;
+                }
+            }
+            return true;
+        }
+
         /// <summary>
         /// Adds an account and initializes its session.
         /// </summary>

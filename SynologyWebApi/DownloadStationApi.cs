@@ -665,6 +665,13 @@ namespace SynologyWebApi
             return success;
         }
 
+        public async Task<bool> CreateDownloadTaskAsync(string uri)
+        {
+            var task = Task.Factory.StartNew<bool>( () => this.CreateDownloadTask(uri));
+            await task;
+            return task.Result;
+        }
+
         /// <summary>
         /// Creates a download task given a local file, typically a .torrent file to be sent
         /// to the Download Station.
@@ -724,6 +731,13 @@ namespace SynologyWebApi
             return success;
         }
 
+        public async Task<bool> CreateDownloadTaskFromFileAsync(string filePath)
+        {
+            var task = Task.Factory.StartNew<bool>(() => this.CreateDownloadTaskFromFile(filePath));
+            await task;
+            return task.Result;
+        }
+
         /// <summary>
         /// Pauses a given list of download tasks.
         /// </summary>
@@ -769,6 +783,13 @@ namespace SynologyWebApi
             }
 
             return success;
+        }
+
+        public async Task<bool> PauseDownloadTasksAsync(IList<DownloadTask> tasks)
+        {
+            var task = Task.Factory.StartNew<bool>(() => this.PauseDownloadTasks(tasks));
+            await task;
+            return task.Result;
         }
 
         /// <summary>
@@ -818,6 +839,13 @@ namespace SynologyWebApi
             return success;
         }
 
+        public async Task<bool> ResumeDownloadTasksAsync(IList<DownloadTask> tasks)
+        {
+            var task = Task.Factory.StartNew<bool>(() => this.ResumeDownloadTasks(tasks));
+            await task;
+            return task.Result;
+        }
+
         /// <summary>
         /// Deletes a given list of download tasks.
         /// </summary>
@@ -863,6 +891,13 @@ namespace SynologyWebApi
             }
 
             return success;
+        }
+
+        public async Task<bool> DeleteDownloadTasksAsync(IList<DownloadTask> tasks)
+        {
+            var task = Task.Factory.StartNew<bool>(() => this.DeleteDownloadTasks(tasks));
+            await task;
+            return task.Result;
         }
 
         /// <summary>
