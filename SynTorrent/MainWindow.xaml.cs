@@ -76,7 +76,11 @@ namespace SynTorrent
 
         private async Task UpdateAllTasksAsync()
         {
-            await App.SessionManager.CollectAllTasksAsync();
+            // This delays automatic refresh until the defer cycle is exited.
+            using(TaskCollectionFilterViewValue.DeferRefresh())
+            {
+                await App.SessionManager.CollectAllTasksAsync();
+            }
 
             // Update stats
             UpdateStatistics();
@@ -137,8 +141,16 @@ namespace SynTorrent
 
         private void FilterControl_SearchFieldEdited(object sender, RoutedEventArgs e)
         {
+            var stopWatch = new System.Diagnostics.Stopwatch();
+            stopWatch.Start();
+
             // Update default search filter            
             TaskCollectionView.View.Refresh();
+
+            stopWatch.Stop();
+
+            TimeSpan ts = stopWatch.Elapsed;
+            System.Console.WriteLine("Filter Time = {0:00} ms", ts.TotalMilliseconds);
         }
 
         private ConnectWindow ConnectWindow;

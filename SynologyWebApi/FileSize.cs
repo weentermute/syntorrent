@@ -9,18 +9,26 @@ namespace SynologyWebApi
     {
         public FileSize(string value, string rate = "")
         {
-            SizeBytes = long.Parse(value);
-            Rate = rate;
+            _SizeBytes = long.Parse(value);
+            _Rate = rate;
+            _Formated = FormatFileSize(_SizeBytes, _Rate);
         }
 
         public FileSize(long value, string rate = "")
         {
-            SizeBytes = value;
-            Rate = rate;
+            _SizeBytes = value;
+            _Rate = rate;
+            _Formated = FormatFileSize(_SizeBytes, _Rate);
         }
 
-        public long SizeBytes = 0;
-        public string Rate;
+        public long SizeBytes
+        {
+            get { return _SizeBytes; }
+        }
+
+        private long _SizeBytes = 0;
+        private string _Rate;
+        private string _Formated;
 
         private static string[] sizes = { "B", "KB", "MB", "GB" };
         public static string FormatFileSize(long value, string rate)
@@ -43,14 +51,19 @@ namespace SynologyWebApi
             if (obj == null) return 1;
             FileSize other = obj as FileSize;
             if (other != null)
-                return this.SizeBytes.CompareTo(other.SizeBytes);
+                return this._SizeBytes.CompareTo(other._SizeBytes);
             else
                 throw new ArgumentException("Object is not a FileSize");
         }
 
         public override string ToString()
         {
-            return FormatFileSize(SizeBytes, Rate);
+            return _Formated;
+        }
+
+        public static FileSize operator + (FileSize lhs, FileSize rhs)
+        {
+            return new FileSize(lhs._SizeBytes + rhs._SizeBytes, lhs._Rate);
         }
     }
 }

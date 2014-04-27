@@ -89,6 +89,14 @@ namespace SynologyWebApi
 
             _TaskStateColor = GetStateColor(Status);
 
+            if (_Size.SizeBytes > 0)
+            {
+                _Progress = (_Downloaded.SizeBytes * 100.0 / _Size.SizeBytes);
+            }
+
+            if (_Downloaded.SizeBytes > 0)
+                _Ratio = (double)_Uploaded.SizeBytes / _Downloaded.SizeBytes;
+
             _DataString = Stringify("", Data);
         }
 
@@ -176,32 +184,24 @@ namespace SynologyWebApi
             get { return _Downloaded; }
         }
 
+        double _Progress = 0.0;
+
         /// <summary>
         /// Download progress in percent.
         /// </summary>
         public double Progress
         {
-            get 
-            {
-                if(_Size.SizeBytes > 0)
-                {
-                    return (_Downloaded.SizeBytes * 100.0 / _Size.SizeBytes);
-                }
-                return 0.0;
-            }
+            get { return _Progress; }
         }
+
+        double _Ratio = 0.0;
 
         /// <summary>
         /// Ratio between uploaded bytes and downloaded bytes.
         /// </summary>
         public double Ratio
         {
-            get
-            {
-                if (_Downloaded.SizeBytes > 0)
-                    return (double)_Uploaded.SizeBytes / _Downloaded.SizeBytes;
-                return 0.0;
-            }
+            get { return _Ratio; }
         }
 
         private FileSize _UploadSpeed;
@@ -233,7 +233,6 @@ namespace SynologyWebApi
         {
             get { return _TaskStateColor; }
         }
-
 
         private string _UserName;
 

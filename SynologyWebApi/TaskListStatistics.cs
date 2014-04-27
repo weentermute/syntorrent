@@ -93,10 +93,10 @@ namespace SynologyWebApi
 
             foreach(DownloadTask task in tasks)
             {
-                downloaded.SizeBytes += task.Downloaded.SizeBytes;
-                downloadRate.SizeBytes += task.DownloadSpeed.SizeBytes;
-                uploaded.SizeBytes += task.Uploaded.SizeBytes;
-                uploadRate.SizeBytes += task.UploadSpeed.SizeBytes;
+                downloaded += task.Downloaded;
+                downloadRate += task.DownloadSpeed;
+                uploaded += task.Uploaded;
+                uploadRate += task.UploadSpeed;
             }
             lock (_ThisLock)
             {
