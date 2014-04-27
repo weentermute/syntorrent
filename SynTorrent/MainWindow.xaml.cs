@@ -7,7 +7,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using SynologyWebApi;
 using System.Windows.Threading;
-using System.Text.RegularExpressions;
 
 namespace SynTorrent
 {
@@ -51,6 +50,13 @@ namespace SynTorrent
 
             // Attach to event to remember previous window state in case the window gets activated
             LayoutUpdated += Window_LayoutUpdated;
+
+            // Connect events from data grid
+            TaskListControl.TaskList.SelectionChanged += TaskList_SelectionChanged;
+            TaskListControl.TaskList.PreviewKeyDown += TaskList_PreviewKeyDown;
+
+            // Connect data source for task list
+            TaskListControl.TaskList.ItemsSource = TaskCollectionFilterViewValue.View;
 
             // Check command line options
             ApendArgs(SingleInstanceApplication.CommandLineArguments.GetArguments());
@@ -98,7 +104,7 @@ namespace SynTorrent
         private void UpdateStatistics()
         {
             List<DownloadTask> tasks = new List<DownloadTask>();
-            foreach (var item in TaskList.Items)
+            foreach (var item in TaskListControl.TaskList.Items)
                 tasks.Add((DownloadTask)item);
             StatsControl.UpdateStatsAsync(tasks);
         }
@@ -115,39 +121,6 @@ namespace SynTorrent
             {
                 TaskCollectionFilterViewValue = value;
             }
-        }
-
-        private static Regex _RegExCamelCase = new Regex("([a-z](?=[A-Z])|[A-Z](?=[A-Z][a-z]))");
-
-        private void TaskList_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
-        {
-            // Adjust and rename some auto generated columns
-            string headerName = e.Column.Header.ToString();
-
-            if (headerName == "Id" || headerName == "UniqueId")
-            {
-                // Hide Id column
-                e.Cancel = true;
-                return;
-            }
-            else if( headerName == "TaskStateColor")
-            {
-                e.Cancel = true;
-                return;
-            }
-            else if( headerName == "Ratio")
-            {
-                (e.Column as DataGridTextColumn).Binding.StringFormat = "{0:F2}";
-            }
-            else if (headerName == "Progress")
-            {
-                (e.Column as DataGridTextColumn).Binding.StringFormat = "{0:F1}%";
-            }
-
-            // Convert from "CamelCase" to "Camel Case"
-            headerName = _RegExCamelCase.Replace(headerName, "$1 ");
-
-            e.Column.Header = headerName;
         }
 
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -310,7 +283,7 @@ namespace SynTorrent
         {
             get
             {
-                return TaskList.SelectedItems.Count > 0;
+                return TaskListControl.TaskList.SelectedItems.Count > 0;
             }
         }
 
@@ -318,7 +291,7 @@ namespace SynTorrent
         {
             get
             {
-                return TaskList.SelectedItems.Count > 0;
+                return TaskListControl.TaskList.SelectedItems.Count > 0;
             }
         }
 
@@ -326,14 +299,14 @@ namespace SynTorrent
         {
             get
             {
-                return TaskList.SelectedItems.Count > 0;
+                return TaskListControl.TaskList.SelectedItems.Count > 0;
             }
         }
 
         private async void PauseButton_Click(object sender, RoutedEventArgs e)
         {
             // Get list of selected data items
-            var selection = TaskList.SelectedItems;
+            var selection = TaskListControl.TaskList.SelectedItems;
 
             List<DownloadTask> tasks = new List<DownloadTask>();
             foreach( var item in selection)
@@ -352,7 +325,7 @@ namespace SynTorrent
         private async void ResumeButton_Click(object sender, RoutedEventArgs e)
         {
             // Get list of selected data items
-            var selection = TaskList.SelectedItems;
+            var selection = TaskListControl.TaskList.SelectedItems;
 
             List<DownloadTask> tasks = new List<DownloadTask>();
             foreach (var item in selection)
@@ -378,7 +351,7 @@ namespace SynTorrent
         private async void DeleteSelectedTasks()
         {
             // Get list of selected data items
-            var selection = TaskList.SelectedItems;
+            var selection = TaskListControl.TaskList.SelectedItems;
 
             string msg;
 

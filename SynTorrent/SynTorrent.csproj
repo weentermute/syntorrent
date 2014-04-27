@@ -124,6 +124,9 @@
     <Compile Include="Settings.cs" />
     <Compile Include="App Instance Manager\ApplicationInstanceManager.cs" />
     <Compile Include="App Instance Manager\InstanceProxy.cs" />
+    <Compile Include="TaskListControl.xaml.cs">
+      <DependentUpon>TaskListControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TaskListStatisticsControl.xaml.cs">
       <DependentUpon>TaskListStatisticsControl.xaml</DependentUpon>
     </Compile>
@@ -169,6 +172,10 @@
     <Page Include="Styles\Simple Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TaskListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TaskListStatisticsControl.xaml">
       <SubType>Designer</SubType>
