@@ -43,6 +43,9 @@ namespace SynologyWebApi
         {
             get
             {
+                if (!_Enabled)
+                    return "Paused";
+
                 return _WebSession.ProgressMessage;
             }
         }
@@ -55,6 +58,17 @@ namespace SynologyWebApi
         public Geometry Image
         {
             get { return _Image; }
+        }
+
+        public bool Enabled
+        {
+            get { return _Enabled; }
+            set
+            {
+                _Enabled = value;
+                OnPropertyChanged("Enabled");
+                OnPropertyChanged("LastMessage");
+            }
         }
 
         #region INotifyPropertyChanged Members
@@ -73,6 +87,7 @@ namespace SynologyWebApi
 
         private DownloadStationApi _WebSession;
         private Geometry _Image;
+        private bool _Enabled = true;
 
         void OnSessionPropertyChanged(object sender, PropertyChangedEventArgs e)
         {

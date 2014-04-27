@@ -67,7 +67,9 @@ namespace SynologyWebApi
         {
             // Create a query that, when executed, returns a collection of tasks.
             IEnumerable<Task<TaskCollection>> tasksQuery =
-                from connection in _SessionList where connection.Session.IsConnected select connection.Session.GetTaskListAsync();
+                from connection in _SessionList
+                where connection.Session.IsConnected
+                select this.GetTaskListAsync(connection);
 
             // Use ToList to execute the query and start the tasks. 
             List<Task<TaskCollection>> tasks = tasksQuery.ToList();
@@ -257,6 +259,20 @@ namespace SynologyWebApi
             {
                 return _SessionList;
             }
+        }
+
+        private async Task<TaskCollection> GetTaskListAsync(ConnectionViewModel connection)
+        {
+            if(connection.Enabled)
+            {
+                return await connection.Session.GetTaskListAsync(); ;
+            }
+
+            // Return empty collection if not enabled
+            TaskCollection collection = new TaskCollection();
+            collection.AccountId = connection.Session.UserAccount.Id;
+
+            return collection;
         }
 
         private async Task<bool> LoginAsync(DownloadStationApi session)

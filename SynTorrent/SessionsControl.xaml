@@ -11,17 +11,21 @@
         <DataTemplate x:Key="SessionDataTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="160" />
                 </Grid.ColumnDefinitions>
-                <Path Data="{Binding Image}" Stretch="Uniform" Width="28" Height="28" 
-                    Fill="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem, Mode=FindAncestor}, Path=Foreground}" />
-                <StackPanel Grid.Column="1">
+                <CheckBox x:Name="EnabledCheckBox" Content="" HorizontalAlignment="Center" VerticalAlignment="Center"
+                          Grid.Column="0"
+                          IsChecked="{Binding Enabled}"/>
+                <Path Data="{Binding Image}" Stretch="Uniform" Width="28" Height="28" Grid.Column="1"
+            		Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" />
+                <StackPanel Grid.Column="2">
                     <TextBlock Text="{Binding ConnectionId}" FontSize="15"
-                               Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem, Mode=FindAncestor}, Path=Foreground}" />
+            			Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" />
                     <TextBlock Text="{Binding LastMessage}" FontSize="11" 
-                               Foreground="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem, Mode=FindAncestor}, Path=Foreground}"
-                               TextWrapping="Wrap" Opacity="0.6" />
+            			Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
+            			TextWrapping="Wrap" Opacity="0.6" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
