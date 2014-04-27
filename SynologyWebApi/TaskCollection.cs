@@ -57,7 +57,7 @@ namespace SynologyWebApi
             {
                 if(otherTask.AccountId == accountId)
                 {
-                    if (!TaskIndexing.ContainsKey(otherTask.Id))
+                    if (!TaskIndexing.ContainsKey(otherTask.UniqueId))
                     {
                         Add(otherTask);
                         added++;
@@ -70,6 +70,19 @@ namespace SynologyWebApi
                 Remove(task);
 
             System.Console.WriteLine("Account={3} Added={0} Removed={1} Modified={2}", added, removed, modified, accountId);
+        }
+
+        /// <summary>
+        /// Adds a task to the collection making sure tasks are uniquely represented in the collection.
+        /// </summary>
+        /// <param name="task"></param>
+        public void AddTask(DownloadTask task)
+        {
+            if(!TaskIndexing.ContainsKey(task.UniqueId))
+            {
+                Add(task);
+                TaskIndexing[task.UniqueId] = task;
+            }
         }
 
         /// <summary>
@@ -93,7 +106,7 @@ namespace SynologyWebApi
         {
             TaskIndexing.Clear();
             foreach (DownloadTask task in this)
-                TaskIndexing[task.Id] = task;
+                TaskIndexing[task.UniqueId] = task;
         }
     }
 }

@@ -25,15 +25,17 @@ namespace SynologyWebApi
         /// Constructs a DownloadTask from the data dictionary return as a web response when querying tasks.
         /// </summary>
         /// <param name="data"></param>
-        public DownloadTask(Dictionary<string, dynamic> data, string accountId)
+        public DownloadTask(Dictionary<string, dynamic> data, Account account)
         {
             Data = data;
-            _Id = accountId+":"+GetValue("id", "");
+            _Id = GetValue("id", "");
             _File = GetValue("title");
             _Size = new FileSize(GetValue("size", "0"));
             _Status = GetValue("status");
             _UserName = GetValue("username");
-            _AccountId = accountId;
+            _AccountId = account.Id;
+            _UniqueId = account.Address + ":" + _Id;
+
             try
             {
                 _Destination = Data["additional"]["detail"]["destination"];
@@ -98,6 +100,16 @@ namespace SynologyWebApi
         public string Id
         {
             get { return _Id; }
+        }
+
+        private string _UniqueId;
+
+        /// <summary>
+        /// Unique ID including account info.
+        /// </summary>
+        public string UniqueId
+        {
+            get { return _UniqueId; }
         }
 
         private string _File;

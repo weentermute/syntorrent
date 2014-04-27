@@ -68,7 +68,7 @@ namespace SynTorrent
             await App.SessionManager.LoginAsync();
         }
 
-        private async void UpdateAllTasksAsync()
+        private async Task UpdateAllTasksAsync()
         {
             await App.SessionManager.CollectAllTasksAsync();
 
@@ -79,9 +79,15 @@ namespace SynTorrent
             FilterControl.FiltersTreeViewModel.UpdateTaskCount(App.SessionManager.AllTasks);
         }
 
-        private void RefreshListTimerTick(object sender, EventArgs e)
+        private async void RefreshListTimerTick(object sender, EventArgs e)
         {
-            UpdateAllTasksAsync();
+            // Stop timer to prevent accumulating concurrent web API queries
+            RefreshListTimer.Stop();
+
+            await UpdateAllTasksAsync();
+
+            // Done updating, schedule next timer tick
+            RefreshListTimer.Start();
         }
 
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
@@ -118,14 +124,16 @@ namespace SynTorrent
             // Adjust and rename some auto generated columns
             string headerName = e.Column.Header.ToString();
 
-            if( headerName == "Id" )
+            if (headerName == "Id" || headerName == "UniqueId")
             {
                 // Hide Id column
                 e.Cancel = true;
+                return;
             }
             else if( headerName == "TaskStateColor")
             {
                 e.Cancel = true;
+                return;
             }
             else if( headerName == "Ratio")
             {
@@ -147,11 +155,6 @@ namespace SynTorrent
             CreateDownloadWindow createWindow = new CreateDownloadWindow();
             createWindow.Owner = this;
             createWindow.ShowDialog();
-        }
-
-        private void TitleBarLoginButton_Click(object sender, RoutedEventArgs e)
-        {
-            ShowLogin();
         }
 
         private void TitleBarSettingsButton_Click(object sender, RoutedEventArgs e)

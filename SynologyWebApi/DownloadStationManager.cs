@@ -143,7 +143,12 @@ namespace SynologyWebApi
             // Group task list by connection id
             var accountTaskMap = new Dictionary<string, List<DownloadTask>>();
             foreach(var task in tasks)
-                accountTaskMap[task.AccountId].Add(task);
+            {
+                if (accountTaskMap.ContainsKey(task.AccountId))
+                    accountTaskMap[task.AccountId].Add(task);
+                else
+                    accountTaskMap[task.AccountId] = new List<DownloadTask>() { task };
+            }
 
             foreach(var account in accountTaskMap)
             {                
@@ -163,7 +168,12 @@ namespace SynologyWebApi
             // Group task list by connection id
             var accountTaskMap = new Dictionary<string, List<DownloadTask>>();
             foreach (var task in tasks)
-                accountTaskMap[task.AccountId].Add(task);
+            {
+                if (accountTaskMap.ContainsKey(task.AccountId))
+                    accountTaskMap[task.AccountId].Add(task);
+                else
+                    accountTaskMap[task.AccountId] = new List<DownloadTask>() { task };
+            }
 
             foreach (var account in accountTaskMap)
             {
@@ -183,7 +193,12 @@ namespace SynologyWebApi
             // Group task list by connection id
             var accountTaskMap = new Dictionary<string, List<DownloadTask>>();
             foreach (var task in tasks)
-                accountTaskMap[task.AccountId].Add(task);
+            {
+                if (accountTaskMap.ContainsKey(task.AccountId))
+                    accountTaskMap[task.AccountId].Add(task);
+                else
+                    accountTaskMap[task.AccountId] = new List<DownloadTask>() { task };
+            }
 
             foreach (var account in accountTaskMap)
             {

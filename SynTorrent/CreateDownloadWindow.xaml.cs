@@ -81,7 +81,7 @@ namespace SynTorrent
 
             CreateButton.IsEnabled = false;
 
-            bool success = false;
+            bool success = true;
 
             if(UrlTextBox.Text != "")
             {

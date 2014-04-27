@@ -126,12 +126,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="TitleBarLoginButton" Grid.Column="1"
-                    Style="{DynamicResource {x:Static metro:Window.DefaultCaptionButtonStyleKey}}" 
-                    Content="{Binding LoginInfo, Mode=OneWay}" 
-                    Click="TitleBarLoginButton_Click"/>
             <Button x:Name="TitleBarSettingsButton" Grid.Column="2"
                     Style="{DynamicResource {x:Static metro:Window.DefaultCaptionButtonStyleKey}}" 
                     Content="Settings" Click="TitleBarSettingsButton_Click"/>

@@ -520,7 +520,14 @@ namespace SynologyWebApi
                 syno.GetParameters.Add("method", "list");
                 syno.GetParameters.Add("additional", "detail,transfer");
 
+                // Measure timing
+                var stopWatch = new System.Diagnostics.Stopwatch();
+                stopWatch.Start();
+
                 string jsonResponse = syno.Get(URL + ApiInfo.Task.Path);
+
+                stopWatch.Stop();
+
                 var jss = new JavaScriptSerializer();
                 var dict = jss.Deserialize<Dictionary<string, dynamic>>(jsonResponse);
 
@@ -533,18 +540,20 @@ namespace SynologyWebApi
 
                     foreach (dynamic task in tasks)
                     {
-                        collection.Add(new DownloadTask(task, _Account.Id));
+                        collection.AddTask(new DownloadTask(task, _Account));
                     }
 
                     if (GetTaskListEvent != null)
                         GetTaskListEvent(this, new ApiRequestResultEventArgs(true));
                     IsIdle = true;
+
+                    TimeSpan ts = stopWatch.Elapsed;
+                    ProgressMessage = String.Format("Response Time {0:00} ms", ts.TotalMilliseconds);
+
                     return collection;
                 }
                 else
                 {
-                    SessionID = "";
-
                     ProgressMessage = "Failed to get task list, error: " + dict["error"]["code"];
 
                     if (GetTaskListEvent != null)
