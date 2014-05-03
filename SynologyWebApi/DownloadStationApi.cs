@@ -244,6 +244,33 @@ namespace SynologyWebApi
         }
 
         /// <summary>
+        /// Human friendly error message of the last operation.
+        /// </summary>
+        public string ErrorMessage
+        {
+            get
+            {
+                lock (_Mutex)
+                {
+                    return this.ErrorMessageValue;
+                }
+            }
+            set
+            {
+                lock (_Mutex)
+                {
+                    if (value != this.ErrorMessageValue)
+                    {
+                        this.ErrorMessageValue = value;
+                        NotifyPropertyChanged("ErrorMessage");
+                    }
+                }
+                if (this.ProgressEvent != null)
+                    this.ProgressEvent(this, new EventArgs());
+            }
+        }
+
+        /// <summary>
         /// Synology API version info.
         /// </summary>
         public ApiVersionInfo ApiInfo { get; set; }
@@ -254,6 +281,7 @@ namespace SynologyWebApi
         public bool ReadyToLogin { get { return Username != "" && Address != ""; } }
 
         private string ProgressMessageValue = String.Empty;
+        private string ErrorMessageValue = String.Empty;
 
         // Boiler plate code to have properties trigger their updates
         public event PropertyChangedEventHandler PropertyChanged;
@@ -640,10 +668,14 @@ namespace SynologyWebApi
             // api=SYNO.DownloadStation.Task&version=1&method=create&uri=ftps://192.0.0.1:21/test/test.zip&username=admin&password=123
 
             ProgressMessage = "Creating download task...";
+            ErrorMessage = "";
             IsIdle = false;
             bool success = false;
             try
             {
+                // Make sure the uri is correct
+                new Uri(uri);
+
                 HttpRequest syno = new HttpRequest();
                 syno.GetParameters.Add("_sid", SessionID);
                 syno.GetParameters.Add("api", "SYNO.DownloadStation.Task");
@@ -658,11 +690,15 @@ namespace SynologyWebApi
                 success = (dict["success"]);
 
                 if(!success)
-                    ProgressMessage = "Failed to create download";
+                    ProgressMessage = ErrorMessage = "Failed to create download";
             }
             catch (WebException ex)
             {
-                ProgressMessage = ex.Message;
+                ProgressMessage = ErrorMessage = ex.Message;
+            }
+            catch(Exception ex)
+            {
+                ProgressMessage = ErrorMessage = ex.Message;
             }
 
             if(success)
@@ -690,6 +726,7 @@ namespace SynologyWebApi
         public bool CreateDownloadTaskFromFile(string filePath)
         {
             ProgressMessage = "Creating download task...";
+            ErrorMessage = "";
             IsIdle = false;
             bool success = false;
             try
@@ -720,15 +757,15 @@ namespace SynologyWebApi
                 success = (dict["success"]);
 
                 if (!success)
-                    ProgressMessage = "Failed to create download";
+                    ErrorMessage = ProgressMessage = "Failed to create download";
             }
             catch (WebException ex)
             {
-                ProgressMessage = ex.Message;
+                ErrorMessage = ProgressMessage = ex.Message;
             }
             catch (Exception ex)
             {
-                ProgressMessage = ex.Message;
+                ErrorMessage = ProgressMessage = ex.Message;
             }
 
             if (success)
@@ -755,6 +792,7 @@ namespace SynologyWebApi
         public bool PauseDownloadTasks(IList<DownloadTask> tasks)
         {
             bool success = false;
+            ErrorMessage = "";
             try
             {
                 // Create id list string
@@ -780,15 +818,15 @@ namespace SynologyWebApi
                 success = (dict["success"]);
 
                 if (!success)
-                    ProgressMessage = "Failed to pause downloads";
+                    ErrorMessage = ProgressMessage = "Failed to pause downloads";
             }
             catch (WebException ex)
             {
-                ProgressMessage = ex.Message;
+                ErrorMessage = ProgressMessage = ex.Message;
             }
             catch (Exception ex)
             {
-                ProgressMessage = ex.Message;
+                ErrorMessage = ProgressMessage = ex.Message;
             }
 
             return success;
@@ -809,6 +847,7 @@ namespace SynologyWebApi
         public bool ResumeDownloadTasks(IList<DownloadTask> tasks)
         {
             bool success = false;
+            ErrorMessage = "";
             try
             {
                 // Create id list string
@@ -834,15 +873,15 @@ namespace SynologyWebApi
                 success = (dict["success"]);
 
                 if (!success)
-                    ProgressMessage = "Failed to resume downloads";
+                    ErrorMessage = ProgressMessage = "Failed to resume downloads";
             }
             catch (WebException ex)
             {
-                ProgressMessage = ex.Message;
+                ErrorMessage = ProgressMessage = ex.Message;
             }
             catch (Exception ex)
             {
-                ProgressMessage = ex.Message;
+                ErrorMessage = ProgressMessage = ex.Message;
             }
 
             return success;
@@ -863,6 +902,7 @@ namespace SynologyWebApi
         public bool DeleteDownloadTasks(IList<DownloadTask> tasks)
         {
             bool success = false;
+            ErrorMessage = "";
             try
             {
                 // Create id list string
@@ -888,15 +928,15 @@ namespace SynologyWebApi
                 success = (dict["success"]);
 
                 if (!success)
-                    ProgressMessage = "Failed to delete downloads";
+                    ErrorMessage = ProgressMessage = "Failed to delete downloads";
             }
             catch (WebException ex)
             {
-                ProgressMessage = ex.Message;
+                ErrorMessage = ProgressMessage = ex.Message;
             }
             catch (Exception ex)
             {
-                ProgressMessage = ex.Message;
+                ErrorMessage = ProgressMessage = ex.Message;
             }
 
             return success;

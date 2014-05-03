@@ -26,6 +26,9 @@
                     <TextBlock Text="{Binding LastMessage}" FontSize="11" 
             			Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}"
             			TextWrapping="Wrap" Opacity="0.6" />
+                    <TextBlock Text="{Binding LastErrorMessage}" FontSize="11" 
+            			Foreground="OrangeRed"
+            			TextWrapping="Wrap" Opacity="0.6" />
                 </StackPanel>
             </Grid>
         </DataTemplate>

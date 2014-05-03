@@ -50,6 +50,14 @@ namespace SynologyWebApi
             }
         }
 
+        public string LastErrorMessage
+        {
+            get
+            {
+                return _WebSession.ErrorMessage;
+            }
+        }
+
         public DownloadStationApi Session
         {
             get { return _WebSession; }
@@ -96,6 +104,8 @@ namespace SynologyWebApi
 
             if (e.PropertyName == "ProgressMessage")
                 OnPropertyChanged("LastMessage");
+            else if (e.PropertyName == "ErrorMessage")
+                OnPropertyChanged("LastErrorMessage");
         }
 
         #endregion

@@ -30,7 +30,7 @@ namespace SynTorrent
             if (App.SessionManager.Sessions.Count > 0)
             {
                 AccountComboBox.SelectedItem = App.SessionManager.Sessions[0];
-                DataContext = AccountComboBox.SelectedItem as DownloadStationApi;
+                SetConnectionSession((AccountComboBox.SelectedItem as ConnectionViewModel).Session);
             }
 
             if(String.IsNullOrEmpty(UrlTextBox.Text))
@@ -150,12 +150,22 @@ namespace SynTorrent
             }
         }
 
+        private void SetConnectionSession( DownloadStationApi session)
+        {
+            if( session != null)
+            {
+                // Clear error message
+                session.ErrorMessage = String.Empty;
+            }
+            DataContext = session;
+        }
+
         private void AccountComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var connection = AccountComboBox.SelectedItem as ConnectionViewModel;
             if (connection != null)
             {
-                DataContext = connection.Session; 
+                SetConnectionSession(connection.Session);
             }
         }
     }
