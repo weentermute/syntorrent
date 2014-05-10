@@ -792,6 +792,7 @@ namespace SynologyWebApi
         public bool PauseDownloadTasks(IList<DownloadTask> tasks)
         {
             bool success = false;
+            ProgressMessage = "Pausing download tasks...";
             ErrorMessage = "";
             try
             {
@@ -819,6 +820,8 @@ namespace SynologyWebApi
 
                 if (!success)
                     ErrorMessage = ProgressMessage = "Failed to pause downloads";
+                else
+                    ProgressMessage = "Tasks paused";
             }
             catch (WebException ex)
             {
@@ -903,6 +906,7 @@ namespace SynologyWebApi
         {
             bool success = false;
             ErrorMessage = "";
+            ProgressMessage = "Removing download task...";
             try
             {
                 // Create id list string
@@ -928,7 +932,9 @@ namespace SynologyWebApi
                 success = (dict["success"]);
 
                 if (!success)
-                    ErrorMessage = ProgressMessage = "Failed to delete downloads";
+                    ErrorMessage = ProgressMessage = "Failed to remove downloads";
+                else
+                    ProgressMessage = "Tasks removed";
             }
             catch (WebException ex)
             {

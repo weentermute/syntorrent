@@ -54,21 +54,11 @@
             <RowDefinition Height="0*"/>
         </Grid.RowDefinitions>
         <ToolBarPanel HorizontalAlignment="Left" Height="56" Width="740" Orientation="Horizontal" VerticalAlignment="Top" Margin="10,10,0,0">
-            <Button x:Name="ConnectButton" Style="{DynamicResource SimpleButton}" Width="75" Click="ConnectButton_Click" ToolTip="Connect to DiskStation.">
-                <StackPanel>
-                    <local:AutoGreyableImage Source="Images/Connect.ico" Height="{DynamicResource IconHeight}"/>
-                </StackPanel>
-            </Button>
             <Button x:Name="AddButton" Style="{DynamicResource SimpleButton}" Width="75" Click="AddButton_Click" ToolTip="Add new download task">
                 <StackPanel>
                     <local:AutoGreyableImage Source="Images/AddTask.ico" Height="{DynamicResource IconHeight}"/>
                 </StackPanel>
             </Button>
-            <!--             <Button x:Name="RefreshButton" Style="{DynamicResource SimpleButton}" Height="56" VerticalAlignment="Top" Width="75" Click="RefreshButton_Click" ToolTip="Refresh download task list"> -->
-            <!--                 <StackPanel> -->
-            <!--                     <local:AutoGreyableImage Source="Images/Refresh.ico" Height="{DynamicResource IconHeight}"/> -->
-            <!--                 </StackPanel> -->
-            <!--             </Button> -->
             <Button x:Name="PauseButton" Style="{DynamicResource SimpleButton}" Height="56" VerticalAlignment="Top" Width="75" ToolTip="Pause selected download tasks" Click="PauseButton_Click" IsEnabled="False">
                 <StackPanel>
                     <local:AutoGreyableImage Source="Images/Pause.ico" Height="{DynamicResource IconHeight}"/>
@@ -79,7 +69,7 @@
                     <local:AutoGreyableImage Source="Images/Resume.ico" Height="{DynamicResource IconHeight}"/>
                 </StackPanel>
             </Button>
-            <Button x:Name="DeleteButton" Style="{DynamicResource SimpleButton}" Height="56" VerticalAlignment="Top" Width="75" ToolTip="Delete selected download tasks" IsEnabled="False" Click="DeleteButton_Click">
+            <Button x:Name="DeleteButton" Style="{DynamicResource SimpleButton}" Height="56" VerticalAlignment="Top" Width="75" ToolTip="Remove selected download tasks" IsEnabled="False" Click="DeleteButton_Click">
                 <StackPanel>
                     <local:AutoGreyableImage Source="Images/Delete.ico" Height="{DynamicResource IconHeight}"/>
                 </StackPanel>
@@ -100,7 +90,7 @@
         </StatusBar>
         <Grid Margin="10,71,10,68">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="190" MaxWidth="220" MinWidth="24"/>
+                <ColumnDefinition Width="250" MaxWidth="300" MinWidth="24"/>
                 <ColumnDefinition Width="5"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>

@@ -369,11 +369,11 @@ namespace SynTorrent
 
             if (selection.Count > 1)
             {
-                msg = String.Format("Are you sure you want to delete {0} tasks?", selection.Count);
+                msg = String.Format("Are you sure you want to remove {0} tasks?", selection.Count);
             }
             else if (selection.Count == 1)
             {
-                msg = String.Format("Are you sure you want to delete {0}?", (selection[0] as DownloadTask).File);
+                msg = String.Format("Are you sure you want to remove {0}?", (selection[0] as DownloadTask).File);
             }
             else
             {
@@ -381,7 +381,7 @@ namespace SynTorrent
             }
 
             // Ask user before deleting any tasks
-            var result = MessageWindow.Show(msg, "Delete Tasks", MessageBoxButton.YesNo);
+            var result = MessageWindow.Show(msg, "Remove Tasks", MessageBoxButton.YesNo);
 
             if (result == MessageBoxResult.Yes)
             {

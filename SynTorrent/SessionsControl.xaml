@@ -13,7 +13,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="40"/>
-                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="170" />
                 </Grid.ColumnDefinitions>
                 <CheckBox x:Name="EnabledCheckBox" Content="" HorizontalAlignment="Center" VerticalAlignment="Center"
                           Grid.Column="0"
