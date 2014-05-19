@@ -117,5 +117,17 @@ namespace SynTorrent.Properties {
                 this["AccountList"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastConnectServer {
+            get {
+                return ((string)(this["LastConnectServer"]));
+            }
+            set {
+                this["LastConnectServer"] = value;
+            }
+        }
     }
 }

@@ -58,9 +58,6 @@ namespace SynTorrent
             // Connect data source for task list
             TaskListControl.TaskList.ItemsSource = TaskCollectionFilterViewValue.View;
 
-            // Check command line options
-            ApendArgs(SingleInstanceApplication.CommandLineArguments.GetArguments());
-
             // Set version info
             if (App.ClickOnceVersion() != new System.Version())
                 Title += " " + App.ClickOnceVersion().ToString();
@@ -416,6 +413,16 @@ namespace SynTorrent
                 DeleteSelectedTasks();
                 e.Handled = true;
             }
+        }
+
+        private void window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Check command line options
+            ApendArgs(SingleInstanceApplication.CommandLineArguments.GetArguments());
+
+            // Make sure we have at least one account
+            if (App.SessionManager.Sessions.Count == 0)
+                ShowLogin();
         }
     }
 }

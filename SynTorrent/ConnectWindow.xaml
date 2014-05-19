@@ -8,7 +8,7 @@
         x:Class="SynTorrent.ConnectWindow"
         Height="317" Width="438" 
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" 
-        Title="SynTorrent Account Settings" Closing="Window_Closing" Topmost="True" ShowInTaskbar="False">
+        Title="SynTorrent Account Settings" Topmost="True" ShowInTaskbar="False">
 
     <Controls:Window.Effect>
         <DropShadowEffect/>
@@ -32,10 +32,10 @@
         <StatusBar HorizontalAlignment="Left" Height="101" Margin="10,178,0,0" VerticalAlignment="Top" Width="316"
 			Background="{DynamicResource BackgroundBrush}"
 			Foreground="{DynamicResource ForegroundBrush}">
-            <TextBlock x:Name="ConnectionStatusLabel" Width="306" Height="82" FontSize="14" TextWrapping="Wrap" TextOptions.TextHintingMode="Animated"/>
+            <TextBlock x:Name="ConnectionStatusLabel" Width="306" Height="82" FontSize="14" TextWrapping="Wrap" TextOptions.TextHintingMode="Animated" Text="{Binding ProgressMessage}"/>
         </StatusBar>
-        <CheckBox x:Name="UseHTTPS" Content="Use HTTPS" HorizontalAlignment="Left" Margin="286,54,0,0" VerticalAlignment="Top" IsChecked="{Binding UseHTTPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <CheckBox x:Name="TrustConnectionCheckBox" Content="I trust this connection" HorizontalAlignment="Left" Margin="31,145,0,0" VerticalAlignment="Top" Width="240" ToolTip="Enable if you use https and your server does not have a valid certificate" IsChecked="{Binding TrustedConnection}" IsEnabled="{Binding UseHTTPS}"/>
+        <CheckBox x:Name="UseHTTPS" Content="Use HTTPS" HorizontalAlignment="Left" Margin="286,54,0,0" VerticalAlignment="Top" IsChecked="{Binding UseHTTPS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="UseHTTPS_Checked" Unchecked="UseHTTPS_Unchecked"/>
+        <CheckBox x:Name="TrustConnectionCheckBox" Content="I trust this connection" HorizontalAlignment="Left" Margin="31,145,0,0" VerticalAlignment="Top" Width="240" ToolTip="Enable if you use https and your server does not have a valid certificate" IsChecked="{Binding TrustedConnection}" IsEnabled="False"/>
 
     </Grid>
 </Controls:Window>

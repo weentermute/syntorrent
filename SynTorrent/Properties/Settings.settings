@@ -26,5 +26,8 @@
     <Setting Name="AccountList" Type="SynologyWebApi.AccountList" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="LastConnectServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

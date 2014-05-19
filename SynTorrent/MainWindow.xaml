@@ -24,7 +24,7 @@
         ResizeMode="CanResizeWithGrip" 
         metro:Window.IsMainWindow="True" 
         Closing="Window_Closing" 
-        StateChanged="Window_StateChanged">
+        StateChanged="Window_StateChanged" Loaded="window_Loaded">
 
     <metro:Window.Resources>
         <ResourceDictionary>

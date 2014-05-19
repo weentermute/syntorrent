@@ -26,18 +26,15 @@ namespace SynTorrent
             InitializeComponent();
 
             if (api != null)
+            {
                 WebApi = api;
+            }
             else
+            {
                 WebApi = new DownloadStationApi();
+                WebApi.Address = SynTorrent.Properties.Settings.Default.LastConnectServer;
+            }
             DataContext = WebApi;
-
-            // Make asynchronous connections to be dispatched into the UI thread
-
-            WebApi.QueryApiInfoEvent += QueryApiVersion_FinishedAsync;                
-            WebApi.LoginEvent += Login_FinishedAsync;
-            WebApi.ProgressEvent += UpdateProgress_Async;
-
-            WebApi.VerifyNotify();
 
             // Choose initial focus
             if (WebApi.Address == "")
@@ -47,6 +44,8 @@ namespace SynTorrent
             else
                 Password.Focus();
 
+            TrustConnectionCheckBox.IsEnabled = UseHTTPS.IsChecked.HasValue ? (bool)UseHTTPS.IsChecked : false;
+
             // Check if we already have a session ID
             if(WebApi.SessionID != "")
             {
@@ -54,17 +53,59 @@ namespace SynTorrent
             }
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {   
             // Query the API version
-            new Task < ApiVersionInfo >(WebApi.QueryApiInfo).Start();
+            var version_task = WebApi.QueryApiInfoAsync();
 
+            // Disable UI
             Address.IsEnabled = false;
             UseHTTPS.IsEnabled = false;
             LoginName.IsEnabled = false;
             Password.IsEnabled = false;
             LoginButton.IsEnabled = false;
             TrustConnectionCheckBox.IsEnabled = false;
+
+            // Wait for response
+            ApiVersionInfo info = await version_task;
+
+            if(info != null)
+            {
+                // Successfully queried API version
+                System.Console.WriteLine(info.ToString());
+
+                // Get password
+                WebApi.Password = Password.Password;
+
+                // Log in, wait for response and create user session
+                bool success = await WebApi.LoginAsync();
+
+                if (success)
+                {
+                    // Successful login, store settings
+                    WebApi.Password = "";
+                    App.SessionManager.Sessions.AddSession(WebApi);
+
+                    // Close window after 1 sec
+                    DispatcherTimer timer = new DispatcherTimer();
+                    timer.Interval = TimeSpan.FromSeconds(1);
+                    timer.Tick += TimerTick;
+                    timer.Start();
+
+                    // Remember server in settings
+                    SynTorrent.Properties.Settings.Default.LastConnectServer = Address.Text;
+                    return;
+                }
+            }
+
+            // Login failed, enable UI
+            Address.IsEnabled = true;
+            UseHTTPS.IsEnabled = true;
+            LoginName.IsEnabled = true;
+            Password.IsEnabled = true;
+            LoginButton.IsEnabled = true;
+            TrustConnectionCheckBox.IsEnabled = UseHTTPS.IsChecked.HasValue ? (bool)UseHTTPS.IsChecked : false;
+            Address.Focus();
         }
 
         public DownloadStationApi WebApi { get; set; }
@@ -79,75 +120,6 @@ namespace SynTorrent
             WebApi.VerifyNotify();
         }
 
-        private void QueryApiVersion_FinishedAsync(object sender, QueryApiInfoEventArgs e)
-        {
-            // Dispatch event coming from a task thread to the main UI thread
-            DownloadStationApi.QueryApiInfoHandler queryApi = this.QueryApiVersion_Finished;
-            Dispatcher.BeginInvoke(queryApi, sender, e);
-        }
-
-        private void QueryApiVersion_Finished(object sender, QueryApiInfoEventArgs e)
-        {
-            if (!Object.ReferenceEquals(sender, WebApi))
-                return;
-
-            this.UpdateUI();
-
-            if (e != null)
-            {
-                // Successfully queried API version
-                System.Console.WriteLine(e.ToString());
-                
-                // Get password
-                WebApi.Password = Password.Password;
-
-                // Log in, create user session
-                new Task<bool>(WebApi.Login).Start();
-            }
-            else
-            {
-                Address.IsEnabled = true;
-                UseHTTPS.IsEnabled = true;
-                LoginName.IsEnabled = true;
-                Password.IsEnabled = true;
-                LoginButton.IsEnabled = true;                
-                Address.Focus();
-            }
-        }
-
-        private void Login_FinishedAsync(object sender, ApiRequestResultEventArgs e)
-        {
-            // Dispatch event coming from a task thread to the main UI thread
-            DownloadStationApi.LoginHandler login = this.Login_Finished;
-            Dispatcher.BeginInvoke(login, sender, e);
-        }
-
-        private void Login_Finished(object sender, ApiRequestResultEventArgs e)
-        {
-            this.UpdateUI();
-
-            if(e.Success)
-            {
-                // Successful login, store settings
-                WebApi.Password = "";
-                App.SessionManager.Sessions.AddSession(WebApi);
-
-                // Close window after 1 sec
-                DispatcherTimer timer = new DispatcherTimer();
-                timer.Interval = TimeSpan.FromSeconds(1);
-                timer.Tick += TimerTick;
-                timer.Start();
-                return;
-            }
-
-            Address.IsEnabled = true;
-            UseHTTPS.IsEnabled = true;
-            LoginName.IsEnabled = true;
-            Password.IsEnabled = true;
-            LoginButton.IsEnabled = true;
-            Address.Focus();
-        }
-
         private void TimerTick(object sender, EventArgs e)
         {
             DispatcherTimer timer = (DispatcherTimer)sender;
@@ -156,31 +128,14 @@ namespace SynTorrent
             Close();
         }
 
-        private void UpdateUI()
+        private void UseHTTPS_Checked(object sender, RoutedEventArgs e)
         {
-            ConnectionStatusLabel.Text = WebApi.ProgressMessage;
+            TrustConnectionCheckBox.IsEnabled = true;
         }
 
-        private void UpdateProgress_Async(object sender, EventArgs e)
+        private void UseHTTPS_Unchecked(object sender, RoutedEventArgs e)
         {
-            // Dispatch event coming from a task thread to the main UI thread
-            DownloadStationApi.ProgressHandler progress = this.UpdateProgress;
-            Dispatcher.BeginInvoke(progress, sender, e);
-        }
-
-        private void UpdateProgress(object sender, EventArgs e)
-        {
-            ConnectionStatusLabel.Text = WebApi.ProgressMessage;
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            // Unsubscribe handlers to avoid keeping this Window alive.
-            // C# events keep their observers alive!
-
-            WebApi.QueryApiInfoEvent    -= QueryApiVersion_FinishedAsync;
-            WebApi.LoginEvent           -= Login_FinishedAsync;
-            WebApi.ProgressEvent        -= UpdateProgress_Async;
+            TrustConnectionCheckBox.IsEnabled = false;
         }
     }
 }

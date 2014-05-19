@@ -82,8 +82,8 @@ namespace SynTorrent
                 var win = MainWindow as MainWindow;
                 if (win == null) return;
 
-                win.ApendArgs(args.CommandLineArgs);
                 win.Activate(x);
+                win.ApendArgs(args.CommandLineArgs);
 
                 // Arguments have been processed, allow other process to exit.
                 SingleInstanceApplication.ApplicationInstanceManager.DoneProcessingArgs();
