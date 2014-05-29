@@ -93,6 +93,32 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- See http://elysium.codeplex.com/SourceControl/latest#2.0/Source%20code/Elysium/Themes/Scrolls/ScrollBar.xaml -->
+        <Style TargetType="{x:Type ScrollBar}">
+            <Setter Property="Background" Value="{StaticResource TransparentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource MiddleLightBrush}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="False"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="MinHeight" Value="6"/>
+                    <Setter Property="Height" Value="12"/>
+                    <Setter Property="MaxHeight" Value="20"/>
+                    <Setter Property="Template" Value="{StaticResource HorizontalScrollBarTemplate}"/>
+                </Trigger>
+                <Trigger Property="Orientation" Value="Vertical">
+                    <Setter Property="MinWidth" Value="6"/>
+                    <Setter Property="Width" Value="12"/>
+                    <Setter Property="MaxWidth" Value="20"/>
+                    <Setter Property="Template" Value="{StaticResource VerticalScrollBarTemplate}"/>
+                </Trigger>
+            </Style.Triggers>
+            
+        </Style>
     </UserControl.Resources>
     
     <Grid>
@@ -101,7 +127,7 @@
                   AutoGeneratingColumn="TaskList_AutoGeneratingColumn" 
                   Grid.Column="2" 
                   BorderThickness="0" 
-                  CanUserResizeRows="False" 
+                  CanUserResizeRows="False" Background="#FF1E1E1E" 
                   >
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">

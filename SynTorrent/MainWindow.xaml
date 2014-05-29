@@ -42,9 +42,9 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="TitleBarSettingsButton" Grid.Column="2"
-                    Style="{DynamicResource {x:Static metro:Window.DefaultCaptionButtonStyleKey}}" 
-                    Content="Settings" Click="TitleBarSettingsButton_Click"/>
+            <!--             <Button x:Name="TitleBarSettingsButton" Grid.Column="2" -->
+            <!--                     Style="{DynamicResource {x:Static metro:Window.DefaultCaptionButtonStyleKey}}"  -->
+            <!--                     Content="Settings" Click="TitleBarSettingsButton_Click"/> -->
         </Grid>
     </metro:Window.TitleBar>
 
@@ -81,11 +81,11 @@
 			Margin="10,0,10,10">
             <Grid Height="43" Width="972">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="17*"/>
-                    <ColumnDefinition Width="37*"/>
+                    <ColumnDefinition Width="35*"/>
+                    <ColumnDefinition Width="208*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="ConnectionStateLabel" FontSize="14" Margin="10,0,0.4,-1" RenderTransformOrigin="0.5,0.5" TextAlignment="Justify" TextWrapping="Wrap"/>
-                <local:TaskListStatisticsControl x:Name="StatsControl" Grid.Column="1" HorizontalAlignment="Left" Margin="9.6,0,0,0" Height="Auto" Width="656"/>
+                <TextBlock x:Name="FilterStatsLabel" Margin="10,0,0,-1" RenderTransformOrigin="0.5,0.5" TextAlignment="Right" TextWrapping="Wrap" Text="Filtered Stats"/>
+                <local:TaskListStatisticsControl x:Name="StatsControl" Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" Height="Auto" Width="656"/>
             </Grid>
         </StatusBar>
         <Grid Margin="10,71,10,68">

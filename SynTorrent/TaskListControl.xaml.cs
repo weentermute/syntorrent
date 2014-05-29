@@ -39,6 +39,11 @@ namespace SynTorrent
             {
                 (e.Column as DataGridTextColumn).Binding.StringFormat = "{0:F1}%";
             }
+            else if (headerName == "AccountId")
+            {
+                e.Column.Header = "Connection";
+                return;
+            }
 
             // Convert from "CamelCase" to "Camel Case"
             headerName = _RegExCamelCase.Replace(headerName, "$1 ");
