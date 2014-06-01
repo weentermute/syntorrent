@@ -221,16 +221,6 @@ namespace SynTorrent
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
-            if( this.WindowState == System.Windows.WindowState.Minimized)
-            {
-                if(RefreshListTimer.IsEnabled)
-                    RefreshListTimer.Stop();
-            }
-            else
-            {
-                if (!RefreshListTimer.IsEnabled)
-                    RefreshListTimer.Start();
-            }
         }
 
         public void ApendArgs(string[] args)
